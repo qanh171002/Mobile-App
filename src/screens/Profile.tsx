@@ -6,6 +6,9 @@ import {
   StyleSheet,
   Image,
   TextInput,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
 } from "react-native";
 import TabBar from "../components/TabBar";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
@@ -23,135 +26,144 @@ export default function Profile() {
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Hồ sơ của tôi</Text>
-      <TouchableOpacity
-        style={styles.editBtn}
-        onPress={() => setIsEditing(!isEditing)}
-      >
-        <MaterialIcons name="edit" size={18} color="white" />
-      </TouchableOpacity>
+    <KeyboardAvoidingView
+      style={styles.container}
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+    >
+      <ScrollView contentContainerStyle={styles.scrollContainer}>
+        <Text style={styles.title}>Hồ sơ của tôi</Text>
+        <TouchableOpacity
+          style={styles.editBtn}
+          onPress={() => setIsEditing(!isEditing)}
+        >
+          <MaterialIcons name="edit" size={18} color="white" />
+        </TouchableOpacity>
 
-      <Image
-        source={require("../../assets/avatar.png")}
-        style={styles.profileImage}
-      />
-
-      <View style={styles.inputContainer}>
-        <Text style={styles.label}>Họ</Text>
-        <TextInput
-          style={styles.input}
-          value={lastName}
-          onChangeText={setLastName}
-          placeholder="Mai Đình"
-          editable={isEditing}
+        <Image
+          source={require("../../assets/avatar.png")}
+          style={styles.profileImage}
         />
 
-        <Text style={styles.label}>Tên</Text>
-        <TextInput
-          style={styles.input}
-          value={firstName}
-          onChangeText={setFirstName}
-          placeholder="Quốc Anh"
-          editable={isEditing}
-        />
+        <View style={styles.inputContainer}>
+          <Text style={styles.label}>Họ</Text>
+          <TextInput
+            style={styles.input}
+            value={lastName}
+            onChangeText={setLastName}
+            placeholder="Mai Đình"
+            editable={isEditing}
+          />
 
-        <Text style={styles.label}>Địa chỉ email</Text>
-        <TextInput
-          style={styles.input}
-          value={email}
-          onChangeText={setEmail}
-          placeholder="anh1710@gmail.com"
-          keyboardType="email-address"
-          editable={isEditing}
-        />
+          <Text style={styles.label}>Tên</Text>
+          <TextInput
+            style={styles.input}
+            value={firstName}
+            onChangeText={setFirstName}
+            placeholder="Quốc Anh"
+            editable={isEditing}
+          />
 
-        <Text style={styles.label}>Tuổi</Text>
-        <TextInput
-          style={styles.input}
-          value={age}
-          onChangeText={setAge}
-          placeholder="22"
-          keyboardType="numeric"
-          editable={isEditing}
-        />
-        <Text style={styles.label}>Giới tính</Text>
-        <View style={styles.genderContainer}>
-          <TouchableOpacity
-            style={[
-              styles.genderOption,
-              gender === "male" && styles.selectedGender,
-            ]}
-            onPress={() => setGender("male")}
-            disabled={!isEditing}
-          >
-            <Text
+          <Text style={styles.label}>Địa chỉ email</Text>
+          <TextInput
+            style={styles.input}
+            value={email}
+            onChangeText={setEmail}
+            placeholder="anh1710@gmail.com"
+            keyboardType="email-address"
+            editable={isEditing}
+          />
+
+          <Text style={styles.label}>Tuổi</Text>
+          <TextInput
+            style={styles.input}
+            value={age}
+            onChangeText={setAge}
+            placeholder="22"
+            keyboardType="numeric"
+            editable={isEditing}
+          />
+
+          <Text style={styles.label}>Giới tính</Text>
+          <View style={styles.genderContainer}>
+            <TouchableOpacity
               style={[
-                styles.genderText,
-                gender === "male" && styles.selectedGenderText,
+                styles.genderOption,
+                gender === "male" && styles.selectedGender,
               ]}
+              onPress={() => setGender("male")}
+              disabled={!isEditing}
             >
-              Nam
-            </Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={[
-              styles.genderOption,
-              gender === "female" && styles.selectedGender,
-            ]}
-            onPress={() => setGender("female")}
-            disabled={!isEditing}
-          >
-            <Text
+              <Text
+                style={[
+                  styles.genderText,
+                  gender === "male" && styles.selectedGenderText,
+                ]}
+              >
+                Nam
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity
               style={[
-                styles.genderText,
-                gender === "female" && styles.selectedGenderText,
+                styles.genderOption,
+                gender === "female" && styles.selectedGender,
               ]}
+              onPress={() => setGender("female")}
+              disabled={!isEditing}
             >
-              Nữ
-            </Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={[
-              styles.genderOption,
-              gender === "other" && styles.selectedGender,
-            ]}
-            onPress={() => setGender("other")}
-            disabled={!isEditing}
-          >
-            <Text
+              <Text
+                style={[
+                  styles.genderText,
+                  gender === "female" && styles.selectedGenderText,
+                ]}
+              >
+                Nữ
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity
               style={[
-                styles.genderText,
-                gender === "other" && styles.selectedGenderText,
+                styles.genderOption,
+                gender === "other" && styles.selectedGender,
               ]}
+              onPress={() => setGender("other")}
+              disabled={!isEditing}
             >
-              Khác
-            </Text>
-          </TouchableOpacity>
+              <Text
+                style={[
+                  styles.genderText,
+                  gender === "other" && styles.selectedGenderText,
+                ]}
+              >
+                Khác
+              </Text>
+            </TouchableOpacity>
+          </View>
+
+          {isEditing && (
+            <TouchableOpacity style={styles.saveBtn} onPress={handleSave}>
+              <Text style={styles.saveBtnText}>Cập nhật</Text>
+            </TouchableOpacity>
+          )}
         </View>
-        {isEditing && (
-          <TouchableOpacity style={styles.saveBtn} onPress={handleSave}>
-            <Text style={styles.saveBtnText}>Cập nhật</Text>
-          </TouchableOpacity>
-        )}
-      </View>
+      </ScrollView>
       <TabBar />
-    </View>
+    </KeyboardAvoidingView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: "#FFF",
+  },
+  scrollContainer: {
+    flexGrow: 1,
     justifyContent: "flex-start",
     alignItems: "center",
-    backgroundColor: "#FFF",
     paddingTop: 40,
-    flexDirection: "column",
   },
   title: {
     fontSize: 24,
-    fontWeight: 700,
+    fontWeight: "700",
     marginTop: 18,
   },
   editBtn: {
@@ -183,7 +195,7 @@ const styles = StyleSheet.create({
     width: "100%",
     height: 46,
     paddingHorizontal: 10,
-    backgroundColor: "#rgba(25, 118, 210, 0.1)",
+    backgroundColor: "rgba(25, 118, 210, 0.1)",
     borderRadius: 8,
     marginBottom: 16,
   },

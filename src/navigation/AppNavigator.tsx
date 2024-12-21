@@ -12,6 +12,7 @@ import Home from "../screens/Home";
 import Statistics from "../screens/Statistics";
 import Setting from "../screens/Setting";
 import Profile from "../screens/Profile";
+import SetGoal from "../screens/SetGoal";
 
 export type RootStackParamList = {
   LandingPage1: undefined;
@@ -22,6 +23,7 @@ export type RootStackParamList = {
   Statistics: undefined;
   Setting: undefined;
   Profile: undefined;
+  SetGoal: undefined;
 };
 
 const Stack = createStackNavigator<RootStackParamList>();
@@ -43,6 +45,7 @@ const AppNavigator = () => {
         <Stack.Screen name="Statistics" component={Statistics} />
         <Stack.Screen name="Setting" component={Setting} />
         <Stack.Screen name="Profile" component={Profile} />
+        <Stack.Screen name="SetGoal" component={SetGoal} />
       </Stack.Navigator>
     </NavigationContainer>
   );

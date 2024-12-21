@@ -13,6 +13,9 @@ import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { useNavigation } from "@react-navigation/native";
 import { RootStackParamList } from "../navigation/AppNavigator";
 import Fontisto from "@expo/vector-icons/Fontisto";
+import FontAwesome from "@expo/vector-icons/FontAwesome";
+import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
+import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 
 const SetGoal = () => {
   const [selectedValue, setSelectedValue] = React.useState("Số ly nước");
@@ -23,10 +26,32 @@ const SetGoal = () => {
     navigation.navigate("Home");
   };
   const templates = [
-    { id: "1", name: "Mùa hè", value: "10 Ly", icon: "🌞" },
-    { id: "2", name: "Thể thao", value: "7 Ly", icon: "🏀" },
-    { id: "3", name: "Mùa đông", value: "5 Ly", icon: "❄️" },
-    { id: "4", name: "Trẻ em", value: "4 Ly", icon: "🐻" },
+    {
+      id: "1",
+      name: "Mùa hè",
+      value: "10 Ly",
+      icon: <FontAwesome name="sun-o" size={28} color="#FFC639" />,
+    },
+    {
+      id: "2",
+      name: "Thể thao",
+      value: "7 Ly",
+      icon: <FontAwesome6 name="basketball" size={24} color="#EF6C32" />,
+    },
+    {
+      id: "3",
+      name: "Mùa đông",
+      value: "5 Ly",
+      icon: <FontAwesome name="snowflake-o" size={24} color="#AFE3FF" />,
+    },
+    {
+      id: "4",
+      name: "Trẻ em",
+      value: "4 Ly",
+      icon: (
+        <MaterialCommunityIcons name="teddy-bear" size={24} color="#8A5F3D" />
+      ),
+    },
   ];
 
   const renderTemplate = ({ item }: { item: any }) => (
@@ -49,7 +74,9 @@ const SetGoal = () => {
       </View>
 
       <View style={styles.goalContainer}>
-        <Fontisto name="flag" size={68} color="#1976D2" />
+        <View style={styles.flag}>
+          <Text style={styles.flagText}>8</Text>
+        </View>
       </View>
 
       <Dropdown
@@ -106,7 +133,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   headerText: {
-    fontSize: 18,
+    fontSize: 21,
     fontWeight: "600",
   },
   goalContainer: {
@@ -114,26 +141,39 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     padding: 20,
     borderRadius: 10,
-    marginBottom: 10,
+    marginBottom: 20,
   },
-  goalNumber: {
-    fontSize: 32,
-    fontWeight: "bold",
-    color: "#007AFF",
+
+  flag: {
+    width: 80,
+    height: 80,
+    borderColor: "#000",
+    borderRightWidth: 3,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "rgba(25, 118, 210, 0.8)",
+  },
+
+  flagText: {
+    fontSize: 72,
+    fontWeight: "600",
+    color: "#FFFFFF",
   },
   dropdown: {
     backgroundColor: "#FFF",
     borderRadius: 10,
     paddingVertical: 15,
-    paddingHorizontal: 10,
-    marginBottom: 48,
-    width: "70%",
+    paddingHorizontal: 15,
+    marginBottom: 61,
+    width: "60%",
     alignSelf: "center",
+    borderWidth: 1,
+    borderColor: "#E8E8E8",
   },
   sectionContainer: {
     backgroundColor: "#fff",
     flex: 1,
-    paddingHorizontal: 20,
+    paddingHorizontal: 24,
     paddingVertical: 36,
     borderTopLeftRadius: 28,
     borderTopRightRadius: 28,
@@ -144,14 +184,16 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
   sectionTitle: {
-    fontSize: 21,
+    fontSize: 22,
     fontWeight: "600",
-    marginBottom: 5,
+    marginBottom: 8,
+    textAlign: "center",
   },
   sectionSubtitle: {
     fontSize: 14,
     color: "#90A5B4",
-    marginBottom: 15,
+    marginBottom: 36,
+    textAlign: "center",
   },
   searchBox: {
     backgroundColor: "#F4F8FB",
@@ -177,13 +219,15 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   templateName: {
-    fontSize: 16,
-    fontWeight: "bold",
+    fontSize: 12,
+    fontWeight: "500",
+    color: "#90A5B4",
   },
   templateValue: {
-    fontSize: 14,
-    color: "#007AFF",
+    fontSize: 16,
+    color: "#141A1E",
     marginTop: 5,
+    fontWeight: "600",
   },
 });
 

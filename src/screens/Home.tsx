@@ -7,6 +7,14 @@ import { Ionicons } from "@expo/vector-icons";
 import TabBar from "../components/TabBar";
 import Svg, { Path } from "react-native-svg";
 
+const currentDate = new Date();
+const options: Intl.DateTimeFormatOptions = {
+  hour: "numeric",
+  minute: "numeric",
+  hour12: true,
+};
+const timeValue = currentDate.toLocaleString("vi-VN", options);
+
 const Home = () => {
   const navigation =
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();
@@ -22,7 +30,10 @@ const Home = () => {
           <Text style={styles.greet}>Chào buổi sáng,</Text>
           <Text style={styles.username}>Trần Anh T</Text>
         </View>
-        <TouchableOpacity style={styles.notifyBtn}>
+        <TouchableOpacity
+          style={styles.notifyBtn}
+          onPress={() => navigation.navigate("WaterTracker")}
+        >
           <Ionicons name="notifications-sharp" size={24} color="#1976D2" />
           <View style={styles.notificationDot} />
         </TouchableOpacity>
@@ -48,7 +59,7 @@ const Home = () => {
         </Svg>
 
         <View style={styles.mainTable}>
-          <Text style={styles.time}>11:00 AM</Text>
+          <Text style={styles.time}>{timeValue}</Text>
           <Text style={styles.waterAmount}>200ml nước (2 ly)</Text>
           <TouchableOpacity style={styles.addBtn} onPress={handleAddGoal}>
             <Text style={styles.addBtnText}>Thêm mục tiêu</Text>

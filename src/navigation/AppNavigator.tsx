@@ -13,6 +13,7 @@ import Statistics from "../screens/Statistics";
 import Setting from "../screens/Setting";
 import Profile from "../screens/Profile";
 import SetGoal from "../screens/SetGoal";
+import WaterTracker from "../screens/WaterTracker";
 
 export type RootStackParamList = {
   LandingPage1: undefined;
@@ -24,6 +25,7 @@ export type RootStackParamList = {
   Setting: undefined;
   Profile: undefined;
   SetGoal: undefined;
+  WaterTracker: undefined;
 };
 
 const Stack = createStackNavigator<RootStackParamList>();
@@ -46,6 +48,7 @@ const AppNavigator = () => {
         <Stack.Screen name="Setting" component={Setting} />
         <Stack.Screen name="Profile" component={Profile} />
         <Stack.Screen name="SetGoal" component={SetGoal} />
+        <Stack.Screen name="WaterTracker" component={WaterTracker} />
       </Stack.Navigator>
     </NavigationContainer>
   );

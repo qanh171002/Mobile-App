@@ -88,6 +88,14 @@ const Home = () => {
         <Text style={styles.dashboardBtnText}>Đi đến thống kê</Text>
       </TouchableOpacity>
 
+      {/* kiểm tra screen Result */}
+      <TouchableOpacity
+        style={styles.resultBtn}
+        onPress={() => navigation.navigate("Result")}
+      >
+        <Text style={styles.dashboardBtnText}>Kết quả</Text>
+      </TouchableOpacity>
+
       <Text style={styles.finishText}>
         Bạn đã hoàn thành 50% mục tiêu hôm nay, tiếp tục cố gắng!
       </Text>
@@ -275,6 +283,13 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontSize: 16,
     fontWeight: "600",
+  },
+  resultBtn: {
+    paddingVertical: 6,
+    paddingHorizontal: 8,
+    backgroundColor: "#1976D2",
+    borderRadius: 8,
+    marginTop: 12,
   },
   finishText: {
     width: 220,

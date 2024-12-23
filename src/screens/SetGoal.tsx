@@ -12,13 +12,19 @@ import { Dropdown } from "react-native-element-dropdown";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { useNavigation } from "@react-navigation/native";
 import { RootStackParamList } from "../navigation/AppNavigator";
-import Fontisto from "@expo/vector-icons/Fontisto";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 
 const SetGoal = () => {
   const [selectedValue, setSelectedValue] = React.useState("Số ly nước");
+  const [selectedAmount, setSelectedAmount] = React.useState(0);
+
+  const handleChooseTemplate = (value: string) => {
+    setSelectedAmount(parseInt(value));
+    console.log(selectedAmount);
+  };
+
   const navigation =
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();
 
@@ -55,11 +61,14 @@ const SetGoal = () => {
   ];
 
   const renderTemplate = ({ item }: { item: any }) => (
-    <View style={styles.templateBox}>
+    <TouchableOpacity
+      style={styles.templateBox}
+      onPress={() => handleChooseTemplate(item.value)}
+    >
       <Text style={styles.templateIcon}>{item.icon}</Text>
       <Text style={styles.templateName}>{item.name}</Text>
       <Text style={styles.templateValue}>{item.value}</Text>
-    </View>
+    </TouchableOpacity>
   );
 
   return (
@@ -75,7 +84,7 @@ const SetGoal = () => {
 
       <View style={styles.goalContainer}>
         <View style={styles.flag}>
-          <Text style={styles.flagText}>8</Text>
+          <Text style={styles.flagText}>{selectedAmount}</Text>
         </View>
       </View>
 
@@ -155,7 +164,7 @@ const styles = StyleSheet.create({
   },
 
   flagText: {
-    fontSize: 72,
+    fontSize: 63,
     fontWeight: "600",
     color: "#FFFFFF",
   },

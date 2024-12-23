@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity, Image } from "react-native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { useNavigation } from "@react-navigation/native";
 import { RootStackParamList } from "../navigation/AppNavigator";
 import { Ionicons } from "@expo/vector-icons";
 import TabBar from "../components/TabBar";
 import Svg, { Path } from "react-native-svg";
+import { useUser } from "../../contexts/UserContext";
 
 const currentDate = new Date();
 const options: Intl.DateTimeFormatOptions = {
@@ -16,6 +17,7 @@ const options: Intl.DateTimeFormatOptions = {
 const timeValue = currentDate.toLocaleString("vi-VN", options);
 
 const Home = () => {
+  const { user } = useUser();
   const navigation =
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();
 
@@ -28,7 +30,9 @@ const Home = () => {
       <View style={styles.headerContainer}>
         <View style={styles.header}>
           <Text style={styles.greet}>Chào buổi sáng,</Text>
-          <Text style={styles.username}>Trần Anh T</Text>
+          <Text style={styles.username}>
+            {user.fname} {user.lname}
+          </Text>
         </View>
         <TouchableOpacity
           style={styles.notifyBtn}
@@ -59,11 +63,19 @@ const Home = () => {
         </Svg>
 
         <View style={styles.mainTable}>
-          <Text style={styles.time}>{timeValue}</Text>
-          <Text style={styles.waterAmount}>200ml nước (2 ly)</Text>
-          <TouchableOpacity style={styles.addBtn} onPress={handleAddGoal}>
-            <Text style={styles.addBtnText}>Thêm mục tiêu</Text>
-          </TouchableOpacity>
+          <View style={styles.leftSide}>
+            <Text style={styles.time}>{timeValue}</Text>
+            <Text style={styles.waterAmount}>200ml nước (2 ly)</Text>
+            <TouchableOpacity style={styles.addBtn} onPress={handleAddGoal}>
+              <Text style={styles.addBtnText}>Thêm mục tiêu</Text>
+            </TouchableOpacity>
+          </View>
+          <Image
+            source={{
+              uri: "https://cdn-icons-png.flaticon.com/512/3456/3456521.png",
+            }}
+            style={styles.icon}
+          />
         </View>
       </View>
 
@@ -81,19 +93,17 @@ const Home = () => {
         </View>
       </View>
 
-      <TouchableOpacity
+      {/* <TouchableOpacity
         style={styles.dashboardBtn}
         onPress={() => navigation.navigate("Statistics")}
       >
         <Text style={styles.dashboardBtnText}>Đi đến thống kê</Text>
-      </TouchableOpacity>
-
-      {/* kiểm tra screen Result */}
+      </TouchableOpacity> */}
       <TouchableOpacity
-        style={styles.resultBtn}
+        style={styles.dashboardBtn}
         onPress={() => navigation.navigate("Result")}
       >
-        <Text style={styles.dashboardBtnText}>Kết quả</Text>
+        <Text style={styles.dashboardBtnText}>Xem kết quả</Text>
       </TouchableOpacity>
 
       <Text style={styles.finishText}>
@@ -171,6 +181,8 @@ const styles = StyleSheet.create({
     bottom: "-20%",
   },
   mainTable: {
+    flexDirection: "row",
+    gap: 36,
     position: "absolute",
     top: 0,
     left: 0,
@@ -179,6 +191,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingVertical: 10,
   },
+  leftSide: {
+    flexDirection: "column",
+  },
   time: {
     fontSize: 20,
     fontWeight: "700",
@@ -186,6 +201,11 @@ const styles = StyleSheet.create({
   },
   waterAmount: {
     color: "#90A5B4",
+  },
+  icon: {
+    width: 100,
+    height: 100,
+    marginTop: 16,
   },
   addBtn: {
     marginTop: 30,
@@ -283,13 +303,6 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontSize: 16,
     fontWeight: "600",
-  },
-  resultBtn: {
-    paddingVertical: 6,
-    paddingHorizontal: 8,
-    backgroundColor: "#1976D2",
-    borderRadius: 8,
-    marginTop: 12,
   },
   finishText: {
     width: 220,

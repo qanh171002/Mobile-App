@@ -12,13 +12,15 @@ import {
 } from "react-native";
 import TabBar from "../components/TabBar";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
+import { useUser } from "../../contexts/UserContext";
 
 export default function Profile() {
-  const [lastName, setLastName] = useState("");
-  const [firstName, setFirstName] = useState("");
-  const [email, setEmail] = useState("");
-  const [age, setAge] = useState("");
-  const [gender, setGender] = useState("");
+  const { user } = useUser();
+  const [lastName, setLastName] = useState(user.lname);
+  const [firstName, setFirstName] = useState(user.fname);
+  const [email, setEmail] = useState(user.email);
+  const [age, setAge] = useState(String(user.age));
+  const [gender, setGender] = useState(user.gender);
   const [isEditing, setIsEditing] = useState(false);
 
   const handleSave = () => {
@@ -31,10 +33,25 @@ export default function Profile() {
       behavior={Platform.OS === "ios" ? "padding" : "height"}
     >
       <ScrollView contentContainerStyle={styles.scrollContainer}>
-        <Text style={styles.title}>Hồ sơ của tôi</Text>
+        <View style={styles.header}>
+          <View style={styles.backBtnContainer}>
+            {isEditing && (
+              <TouchableOpacity
+                style={styles.backBtn}
+                onPress={() => setIsEditing(false)}
+              >
+                <MaterialIcons name="arrow-back" size={24} color="#1976D2" />
+              </TouchableOpacity>
+            )}
+          </View>
+          <Text style={styles.title}>Hồ sơ của tôi</Text>
+        </View>
+
         <TouchableOpacity
           style={styles.editBtn}
-          onPress={() => setIsEditing(!isEditing)}
+          onPress={
+            isEditing === true ? () => {} : () => setIsEditing(!isEditing)
+          }
         >
           <MaterialIcons name="edit" size={18} color="white" />
         </TouchableOpacity>
@@ -48,18 +65,16 @@ export default function Profile() {
           <Text style={styles.label}>Họ</Text>
           <TextInput
             style={styles.input}
-            value={lastName}
-            onChangeText={setLastName}
-            placeholder="Mai Đình"
+            value={firstName}
+            onChangeText={setFirstName}
             editable={isEditing}
           />
 
           <Text style={styles.label}>Tên</Text>
           <TextInput
             style={styles.input}
-            value={firstName}
-            onChangeText={setFirstName}
-            placeholder="Quốc Anh"
+            value={lastName}
+            onChangeText={setLastName}
             editable={isEditing}
           />
 
@@ -68,7 +83,6 @@ export default function Profile() {
             style={styles.input}
             value={email}
             onChangeText={setEmail}
-            placeholder="anh1710@gmail.com"
             keyboardType="email-address"
             editable={isEditing}
           />
@@ -78,7 +92,6 @@ export default function Profile() {
             style={styles.input}
             value={age}
             onChangeText={setAge}
-            placeholder="22"
             keyboardType="numeric"
             editable={isEditing}
           />
@@ -160,6 +173,22 @@ const styles = StyleSheet.create({
     justifyContent: "flex-start",
     alignItems: "center",
     paddingTop: 40,
+  },
+  header: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    width: "100%",
+  },
+  backBtnContainer: {
+    position: "absolute",
+    left: 28,
+    top: 10,
+  },
+
+  backBtn: {
+    marginRight: 10,
+    padding: 10,
   },
   title: {
     fontSize: 24,

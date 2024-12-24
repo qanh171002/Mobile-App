@@ -15,14 +15,15 @@ import { RootStackParamList } from "../navigation/AppNavigator";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
+import { useWaterTracker } from "../contexts/WaterTrackerContext";
 
 const SetGoal = () => {
   const [selectedValue, setSelectedValue] = React.useState("Số ly nước");
-  const [selectedAmount, setSelectedAmount] = React.useState(0);
+  // const [selectedAmount, setSelectedAmount] = React.useState(0);
+  const { maxLevel, chooseLevel } = useWaterTracker();
 
   const handleChooseTemplate = (value: string) => {
-    setSelectedAmount(parseInt(value));
-    console.log(selectedAmount);
+    chooseLevel(parseInt(value));
   };
 
   const navigation =
@@ -84,7 +85,7 @@ const SetGoal = () => {
 
       <View style={styles.goalContainer}>
         <View style={styles.flag}>
-          <Text style={styles.flagText}>{selectedAmount}</Text>
+          <Text style={styles.flagText}>{maxLevel}</Text>
         </View>
       </View>
 

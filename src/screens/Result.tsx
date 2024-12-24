@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, Image, TouchableOpacity } from "react-native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { useNavigation } from "@react-navigation/native";
 import { RootStackParamList } from "../navigation/AppNavigator";
+import { useWaterTracker } from "../contexts/WaterTrackerContext";
 
 const currentDate = new Date();
 const dateValue = `${currentDate.getDate()} tháng ${
@@ -10,12 +11,16 @@ const dateValue = `${currentDate.getDate()} tháng ${
 } `;
 
 const Result: React.FC = () => {
+  const { currentLevel, maxLevel } = useWaterTracker();
   const navigation =
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();
 
   const handleBack = () => {
     navigation.navigate("Home");
   };
+
+  const isGoalAchieved = currentLevel >= maxLevel;
+
   return (
     <View style={styles.container}>
       <Text style={styles.date}>Hôm nay - {dateValue}</Text>
@@ -23,7 +28,9 @@ const Result: React.FC = () => {
 
       <Image
         source={{
-          uri: "https://cdn-icons-png.flaticon.com/512/2383/2383637.png",
+          uri: isGoalAchieved
+            ? "https://cdn-icons-png.flaticon.com/512/2383/2383637.png"
+            : "https://cdn-icons-png.flaticon.com/512/4274/4274801.png",
         }}
         style={styles.icon}
       />
@@ -32,23 +39,32 @@ const Result: React.FC = () => {
         <View style={styles.overlayContainer1}>
           <Image
             source={{
-              uri: "https://cdn-icons-png.flaticon.com/512/7626/7626666.png",
+              uri: isGoalAchieved
+                ? "https://cdn-icons-png.flaticon.com/512/7626/7626666.png"
+                : "https://cdn-icons-png.flaticon.com/512/6889/6889521.png",
             }}
             style={styles.fireworkIcon}
           />
         </View>
-        <Text style={styles.congratsText}>Xin chúc mừng!</Text>
+        <Text style={styles.congratsText}>
+          {isGoalAchieved ? "Xin chúc mừng!" : "Ôi không!"}
+        </Text>
         <Text style={styles.mainMessage}>
-          Bạn đã hoàn thành mục tiêu của ngày hôm nay!
+          {isGoalAchieved
+            ? "Bạn đã hoàn thành mục tiêu của ngày hôm nay!"
+            : "Bạn chưa hoàn thành mục tiêu ngày hôm nay"}
         </Text>
         <Text style={styles.subMessage}>
-          Hãy luôn luôn cố gắng như ngày hôm nay! Bạn đang chăm sóc tốt cho bản
-          thân để đạt được những điều tuyệt vời trong cuộc sống.
+          {isGoalAchieved
+            ? "Hãy luôn luôn cố gắng như ngày hôm nay! Bạn đang chăm sóc tốt cho bản thân để đạt được những điều tuyệt vời trong cuộc sống."
+            : "Thành công không phải là điểm cuối, thất bại không phải điều tồi tệ, hãy nỗ lực để lần tới có thể hoàn thành mục tiêu của bạn."}
         </Text>
         <View style={styles.overlayContainer2}>
           <Image
             source={{
-              uri: "https://cdn-icons-png.flaticon.com/512/1021/1021202.png",
+              uri: isGoalAchieved
+                ? "https://cdn-icons-png.flaticon.com/512/1021/1021202.png"
+                : "https://cdn-icons-png.flaticon.com/512/1770/1770579.png",
             }}
             style={styles.trophyIcon}
           />
@@ -76,8 +92,9 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   greeting: {
-    fontSize: 16,
+    fontSize: 18,
     marginVertical: 20,
+    fontWeight: "600",
     color: "#90A5B4",
   },
   icon: {

@@ -7,6 +7,7 @@ import { RootStackParamList } from "../navigation/AppNavigator";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import WaterGlass from "../components/WaterGlass";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
+import { useWaterTracker } from "../contexts/WaterTrackerContext";
 
 const currentDate = new Date();
 const dateValue = `${currentDate.getDate()} tháng ${
@@ -14,12 +15,9 @@ const dateValue = `${currentDate.getDate()} tháng ${
 } ${currentDate.getFullYear()}`;
 
 const WaterTracker = () => {
-  const [currentLevel, setCurrentLevel] = useState(6);
+  const { currentLevel } = useWaterTracker();
 
-  const increaseLevel = () => {
-    setCurrentLevel((prev) => Math.min(prev + 1, 10));
-  };
-  const progress = 56;
+  const progress = Math.floor((currentLevel / 10) * 100);
   const targetReached = progress >= 100;
   const navigation =
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();
@@ -40,7 +38,6 @@ const WaterTracker = () => {
       </View>
       <View style={styles.glassContainer}>
         <WaterGlass currentLevel={currentLevel} />
-        {/* <Button title="Uống Thêm Nước" onPress={increaseLevel} /> */}
       </View>
 
       <View style={styles.sectionContainer}>
@@ -83,7 +80,7 @@ const WaterTracker = () => {
                   targetReached ? styles.positive : styles.negative,
                 ]}
               >
-                {targetReached ? "+100%" : "-60%"}
+                {targetReached ? "+100%" : `-${100 - progress}%`}
               </Text>
               <Text style={styles.performanceLabel}>Hiệu suất Vận Động</Text>
               <MaterialCommunityIcons
@@ -99,7 +96,7 @@ const WaterTracker = () => {
                   targetReached ? styles.positive : styles.negative,
                 ]}
               >
-                {targetReached ? "+100%" : "-50%"}
+                {targetReached ? "+100%" : `-${100 - progress}%`}
               </Text>
               <Text style={styles.performanceLabel}>Hiệu suất Nhận Thức</Text>
               <MaterialCommunityIcons name="brain" size={36} color="black" />

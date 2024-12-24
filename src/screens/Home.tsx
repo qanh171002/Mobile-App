@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { View, Text, StyleSheet, TouchableOpacity, Image } from "react-native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { useNavigation } from "@react-navigation/native";
@@ -7,6 +7,7 @@ import { Ionicons } from "@expo/vector-icons";
 import TabBar from "../components/TabBar";
 import Svg, { Path } from "react-native-svg";
 import { useUser } from "../contexts/UserContext";
+import { useWaterTracker } from "../contexts/WaterTrackerContext";
 
 const currentDate = new Date();
 const options: Intl.DateTimeFormatOptions = {
@@ -18,6 +19,7 @@ const timeValue = currentDate.toLocaleString("vi-VN", options);
 
 const Home = () => {
   const { user } = useUser();
+  const { currentLevel, maxLevel } = useWaterTracker();
   const navigation =
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();
 
@@ -81,13 +83,17 @@ const Home = () => {
 
       <View style={styles.circularContainer}>
         <View style={styles.circularProgress}>
-          <Text style={styles.circularText}>500ml</Text>
+          <Text style={styles.circularText}> {currentLevel * 100}ml</Text>
         </View>
         <View style={styles.progressDetails}>
           <View style={styles.progressRow}>
             <Ionicons name="water-outline" size={20} color="#1976D2" />
-            <Text style={styles.progressText}>100ml</Text>
-            <Text style={styles.progressPercentage}>10%</Text>
+            <Text style={styles.progressText}>{currentLevel * 100}ml</Text>
+            <Text style={styles.progressPercentage}>
+              {maxLevel > 0
+                ? `${Math.floor((currentLevel / maxLevel) * 100)}%`
+                : "0%"}
+            </Text>
           </View>
           {/* <Text style={styles.goalText}>Mục tiêu: 2000ml</Text> */}
         </View>
@@ -95,7 +101,7 @@ const Home = () => {
 
       {/* <TouchableOpacity
         style={styles.dashboardBtn}
-        onPress={() => navigation.navigate("Statistics")}
+        onPress={() => navigation.navigate("Result")}
       >
         <Text style={styles.dashboardBtnText}>Đi đến thống kê</Text>
       </TouchableOpacity> */}

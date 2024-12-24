@@ -6,10 +6,13 @@ import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../navigation/AppNavigator";
+import FontAwesome from "@expo/vector-icons/FontAwesome";
+import { useWaterTracker } from "../contexts/WaterTrackerContext";
 
 type TabBarProps = {};
 
 export default function TabBar({}: TabBarProps) {
+  const { increaseLevel } = useWaterTracker();
   const navigation =
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();
 
@@ -41,10 +44,14 @@ export default function TabBar({}: TabBarProps) {
         <Text style={{ color: getIconColor("Statistics") }}>Thống kê</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity style={styles.alarmButton}>
-        <Ionicons name="alarm" size={24} color="black" />
+      <TouchableOpacity
+        style={styles.addButton}
+        onPress={() => {
+          increaseLevel();
+        }}
+      >
+        <FontAwesome name="plus" size={24} color="black" />
       </TouchableOpacity>
-
       <TouchableOpacity
         onPress={() => navigation.navigate("Setting")}
         style={styles.tabButton}
@@ -85,7 +92,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
-  alarmButton: {
+  addButton: {
     backgroundColor: "#fff",
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 0 },

@@ -6,7 +6,7 @@ import { RootStackParamList } from "../navigation/AppNavigator";
 import { Ionicons } from "@expo/vector-icons";
 import TabBar from "../components/TabBar";
 import Svg, { Path } from "react-native-svg";
-import { useUser } from "../../contexts/UserContext";
+import { useUser } from "../contexts/UserContext";
 
 const currentDate = new Date();
 const options: Intl.DateTimeFormatOptions = {

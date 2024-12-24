@@ -12,7 +12,7 @@ import {
 } from "react-native";
 import TabBar from "../components/TabBar";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
-import { useUser } from "../../contexts/UserContext";
+import { useUser } from "../contexts/UserContext";
 
 export default function Profile() {
   const { user } = useUser();

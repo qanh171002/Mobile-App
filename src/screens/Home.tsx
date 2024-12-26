@@ -67,7 +67,9 @@ const Home = () => {
         <View style={styles.mainTable}>
           <View style={styles.leftSide}>
             <Text style={styles.time}>{timeValue}</Text>
-            <Text style={styles.waterAmount}>200ml nước (2 ly)</Text>
+            <Text style={styles.waterAmount}>
+              {currentLevel * 200}ml nước ({currentLevel} ly)
+            </Text>
             <TouchableOpacity style={styles.addBtn} onPress={handleAddGoal}>
               <Text style={styles.addBtnText}>Thêm mục tiêu</Text>
             </TouchableOpacity>
@@ -95,7 +97,7 @@ const Home = () => {
                 : "0%"}
             </Text>
           </View>
-          {/* <Text style={styles.goalText}>Mục tiêu: 2000ml</Text> */}
+          <Text style={styles.goalText}>Mục tiêu: {maxLevel * 200}ml</Text>
         </View>
       </View>
 
@@ -113,7 +115,8 @@ const Home = () => {
       </TouchableOpacity>
 
       <Text style={styles.finishText}>
-        Bạn đã hoàn thành 50% mục tiêu hôm nay, tiếp tục cố gắng!
+        Bạn đã hoàn thành {Math.floor((currentLevel / maxLevel) * 100)}% mục
+        tiêu hôm nay, tiếp tục cố gắng!
       </Text>
 
       <TabBar />
@@ -266,8 +269,8 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     shadowColor: "#1BA9E1",
     shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.08,
-    shadowRadius: 45,
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
     elevation: 5,
   },
   progressText: {
@@ -282,22 +285,25 @@ const styles = StyleSheet.create({
   },
   goalText: {
     position: "absolute",
-    top: "30%",
-    left: "70%",
+    top: "-10%",
+    left: "40%",
     transform: [{ translateX: -20 }, { translateY: -50 }],
     marginTop: 8,
     fontSize: 14,
     fontWeight: "600",
-    color: "#90A5B4",
+    color: "#1976D2",
     backgroundColor: "#fff",
-    padding: 20,
-    borderRadius: 16,
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    borderRadius: 12,
     shadowColor: "#1BA9E1",
     shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.08,
-    shadowRadius: 45,
-    elevation: 5,
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+    textAlign: "center",
   },
+
   dashboardBtn: {
     paddingVertical: 20,
     paddingHorizontal: 50,

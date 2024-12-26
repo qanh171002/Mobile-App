@@ -44,7 +44,9 @@ export default function Profile() {
               </TouchableOpacity>
             )}
           </View>
-          <Text style={styles.title}>Hồ sơ của tôi</Text>
+          <Text style={styles.title}>
+            {isEditing ? "Chỉnh sửa hồ sơ" : "Hồ sơ của tôi"}
+          </Text>
         </View>
 
         <TouchableOpacity

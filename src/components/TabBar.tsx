@@ -50,7 +50,7 @@ export default function TabBar({}: TabBarProps) {
           increaseLevel();
         }}
       >
-        <FontAwesome name="plus" size={24} color="black" />
+        <FontAwesome name="plus" size={24} color="white" />
       </TouchableOpacity>
       <TouchableOpacity
         onPress={() => navigation.navigate("Setting")}
@@ -93,7 +93,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   addButton: {
-    backgroundColor: "#fff",
+    backgroundColor: "rgba(25, 118, 210, 1)",
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.1,

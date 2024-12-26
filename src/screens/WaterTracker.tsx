@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { View, Text, StyleSheet, TouchableOpacity, Button } from "react-native";
 import Svg, { Circle } from "react-native-svg";
 import { AntDesign } from "@expo/vector-icons";
@@ -15,9 +15,14 @@ const dateValue = `${currentDate.getDate()} tháng ${
 } ${currentDate.getFullYear()}`;
 
 const WaterTracker = () => {
-  const { currentLevel } = useWaterTracker();
+  const { currentLevel, maxLevel } = useWaterTracker();
 
-  const progress = Math.floor((currentLevel / 10) * 100);
+  const [progress, setProgress] = useState(0);
+
+  useEffect(() => {
+    const newProgress = Math.floor((currentLevel / maxLevel) * 100);
+    setProgress(newProgress);
+  }, [currentLevel, maxLevel]);
   const targetReached = progress >= 100;
   const navigation =
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();

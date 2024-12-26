@@ -1,20 +1,21 @@
 import React from "react";
-import { View, Text, StyleSheet } from "react-native";
+import { View, Text, StyleSheet, Image } from "react-native";
 import Svg, { Rect, Line, Polygon } from "react-native-svg";
+import { useWaterTracker } from "../contexts/WaterTrackerContext";
 
 interface WaterGlassProps {
   currentLevel: number;
 }
 
 const WaterGlass: React.FC<WaterGlassProps> = ({ currentLevel }) => {
-  const maxLevel = 10;
+  const { maxLevel } = useWaterTracker();
   const glassHeight = 160;
   const waterHeight = (currentLevel / maxLevel) * glassHeight;
 
   return (
     <View style={styles.container}>
       <Text style={styles.levelText}>{currentLevel} Ly</Text>
-      <Svg width="70" height={glassHeight} viewBox="0 0 100 200">
+      {/* <Svg width="70" height={glassHeight} viewBox="0 0 100 200">
         <Rect
           x="10"
           y="0"
@@ -31,7 +32,13 @@ const WaterGlass: React.FC<WaterGlassProps> = ({ currentLevel }) => {
           fill="rgba(25, 118, 210, 0.8)"
           rx="10"
         />
-      </Svg>
+      </Svg> */}
+      <Image
+        source={{
+          uri: "https://cdn-icons-png.flaticon.com/512/8013/8013441.png",
+        }}
+        style={styles.icon}
+      />
 
       <View style={styles.ruler}>
         {Array.from({ length: maxLevel }, (_, index) => {
@@ -51,13 +58,13 @@ const WaterGlass: React.FC<WaterGlassProps> = ({ currentLevel }) => {
         })}
       </View>
 
-      <View
+      {/* <View
         style={[styles.arrowContainer, { top: glassHeight - waterHeight - 10 }]}
       >
         <Svg height="20" width="14">
           <Polygon points="40,0 0,10 40,20" fill="black" />
         </Svg>
-      </View>
+      </View> */}
     </View>
   );
 };
@@ -102,6 +109,11 @@ const styles = StyleSheet.create({
   arrowContainer: {
     position: "absolute",
     right: -40,
+  },
+  icon: {
+    width: 100,
+    height: 100,
+    marginBottom: 28,
   },
 });
 

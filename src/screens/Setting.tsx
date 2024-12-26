@@ -28,7 +28,7 @@ export default function HistoryScreen() {
     { id: 4, label: "Tần suất uống", value: "0 lần / Ngày", color: "blue" },
   ];
 
-  const renderWeekDay = ({ item }) => (
+  const renderWeekDay = ({ item }: { item: any }) => (
     <View
       style={[
         styles.weekDay,
@@ -39,7 +39,7 @@ export default function HistoryScreen() {
     </View>
   );
 
-  const renderReportItem = ({ item }) => (
+  const renderReportItem = ({ item }: { item: any }) => (
     <View style={styles.reportItem}>
       <View style={[styles.dot, { backgroundColor: item.color }]} />
       <Text style={styles.reportLabel}>{item.label}</Text>

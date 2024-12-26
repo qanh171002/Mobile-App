@@ -6,21 +6,39 @@ import {
   TouchableOpacity,
   TextInput,
   FlatList,
+  Image,
 } from "react-native";
 import { AntDesign } from "@expo/vector-icons";
 import { Dropdown } from "react-native-element-dropdown";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { useNavigation } from "@react-navigation/native";
 import { RootStackParamList } from "../navigation/AppNavigator";
-import FontAwesome from "@expo/vector-icons/FontAwesome";
-import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
-import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { useWaterTracker } from "../contexts/WaterTrackerContext";
+interface Template {
+  id: string;
+  name: string;
+  value: number;
+  icon: string;
+  displayValue?: string;
+}
 
 const SetGoal = () => {
   const [selectedValue, setSelectedValue] = React.useState("Số ly nước");
-  // const [selectedAmount, setSelectedAmount] = React.useState(0);
+  const [displayedTemplates, setDisplayedTemplates] = React.useState<
+    Template[]
+  >([]);
   const { maxLevel, chooseLevel } = useWaterTracker();
+
+  React.useEffect(() => {
+    const updatedTemplates = templates.map((template) => {
+      const newValue =
+        selectedValue === "Số ml"
+          ? template.value * 200 + " ml"
+          : template.value + " Ly";
+      return { ...template, displayValue: newValue };
+    });
+    setDisplayedTemplates(updatedTemplates);
+  }, [selectedValue]);
 
   const handleChooseTemplate = (value: string) => {
     chooseLevel(parseInt(value));
@@ -32,32 +50,30 @@ const SetGoal = () => {
   const handleBack = () => {
     navigation.navigate("Home");
   };
-  const templates = [
+  const templates: Template[] = [
     {
       id: "1",
       name: "Mùa hè",
-      value: "10 Ly",
-      icon: <FontAwesome name="sun-o" size={28} color="#FFC639" />,
+      value: 10,
+      icon: "https://cdn-icons-png.flaticon.com/512/10484/10484158.png",
     },
     {
       id: "2",
       name: "Thể thao",
-      value: "7 Ly",
-      icon: <FontAwesome6 name="basketball" size={24} color="#EF6C32" />,
+      value: 7,
+      icon: "https://cdn-icons-png.flaticon.com/512/1041/1041168.png",
     },
     {
       id: "3",
       name: "Mùa đông",
-      value: "5 Ly",
-      icon: <FontAwesome name="snowflake-o" size={24} color="#AFE3FF" />,
+      value: 5,
+      icon: "https://cdn-icons-png.flaticon.com/512/2336/2336319.png",
     },
     {
       id: "4",
       name: "Trẻ em",
-      value: "4 Ly",
-      icon: (
-        <MaterialCommunityIcons name="teddy-bear" size={24} color="#8A5F3D" />
-      ),
+      value: 4,
+      icon: "https://cdn-icons-png.flaticon.com/512/523/523495.png",
     },
   ];
 
@@ -66,16 +82,21 @@ const SetGoal = () => {
       style={styles.templateBox}
       onPress={() => handleChooseTemplate(item.value)}
     >
-      <Text style={styles.templateIcon}>{item.icon}</Text>
+      <Image
+        source={{
+          uri: item.icon,
+        }}
+        style={styles.icon}
+      />
       <Text style={styles.templateName}>{item.name}</Text>
-      <Text style={styles.templateValue}>{item.value}</Text>
+      <Text style={styles.templateValue}>{item.displayValue}</Text>
     </TouchableOpacity>
   );
 
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <TouchableOpacity onPress={handleBack}>
+        <TouchableOpacity onPress={handleBack} style={styles.backIcon}>
           <AntDesign name="arrowleft" size={24} color="#1976D2" />
         </TouchableOpacity>
         <View style={styles.headerTitleContainer}>
@@ -112,7 +133,7 @@ const SetGoal = () => {
         />
 
         <FlatList
-          data={templates}
+          data={displayedTemplates}
           numColumns={2}
           renderItem={renderTemplate}
           keyExtractor={(item) => item.id}
@@ -129,16 +150,22 @@ const styles = StyleSheet.create({
     backgroundColor: "#E8F5FF",
   },
   header: {
+    position: "relative",
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "flex-start",
+    justifyContent: "center",
     marginBottom: 20,
     marginTop: 56,
     marginLeft: 16,
     gap: 10,
   },
+  backIcon: {
+    position: "absolute",
+    top: "5%",
+    left: "2%",
+  },
   headerTitleContainer: {
-    flex: 0.9,
+    flex: 1,
     alignItems: "center",
     justifyContent: "center",
   },
@@ -224,8 +251,9 @@ const styles = StyleSheet.create({
     borderWidth: 0.5,
     borderColor: "#D0DBE2",
   },
-  templateIcon: {
-    fontSize: 24,
+  icon: {
+    height: 24,
+    width: 24,
     marginBottom: 10,
   },
   templateName: {

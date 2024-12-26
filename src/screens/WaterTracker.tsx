@@ -1,12 +1,18 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, StyleSheet, TouchableOpacity, Button } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  Button,
+  Image,
+} from "react-native";
 import Svg, { Circle } from "react-native-svg";
 import { AntDesign } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import { RootStackParamList } from "../navigation/AppNavigator";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import WaterGlass from "../components/WaterGlass";
-import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { useWaterTracker } from "../contexts/WaterTrackerContext";
 
 const currentDate = new Date();
@@ -34,7 +40,7 @@ const WaterTracker = () => {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <TouchableOpacity onPress={handleBack}>
+        <TouchableOpacity onPress={handleBack} style={styles.backIcon}>
           <AntDesign name="arrowleft" size={24} color="#1976D2" />
         </TouchableOpacity>
         <View style={styles.headerTitleContainer}>
@@ -88,10 +94,11 @@ const WaterTracker = () => {
                 {targetReached ? "+100%" : `-${100 - progress}%`}
               </Text>
               <Text style={styles.performanceLabel}>Hiệu suất Vận Động</Text>
-              <MaterialCommunityIcons
-                name="shoe-sneaker"
-                size={36}
-                color="black"
+              <Image
+                source={{
+                  uri: "https://cdn-icons-png.flaticon.com/512/8815/8815678.png",
+                }}
+                style={styles.icon}
               />
             </View>
             <View style={styles.performanceItem}>
@@ -104,7 +111,13 @@ const WaterTracker = () => {
                 {targetReached ? "+100%" : `-${100 - progress}%`}
               </Text>
               <Text style={styles.performanceLabel}>Hiệu suất Nhận Thức</Text>
-              <MaterialCommunityIcons name="brain" size={36} color="black" />
+
+              <Image
+                source={{
+                  uri: "https://cdn-icons-png.flaticon.com/512/6969/6969728.png",
+                }}
+                style={styles.icon}
+              />
             </View>
           </View>
         </View>
@@ -130,16 +143,22 @@ const styles = StyleSheet.create({
     backgroundColor: "#EAF8FE",
   },
   header: {
+    position: "relative",
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "flex-start",
+    justifyContent: "center",
     marginBottom: 36,
     marginTop: 56,
     marginLeft: 16,
     gap: 10,
   },
+  backIcon: {
+    position: "absolute",
+    top: "5%",
+    left: "2%",
+  },
   headerTitleContainer: {
-    flex: 0.9,
+    flex: 1,
     alignItems: "center",
     justifyContent: "center",
   },
@@ -233,6 +252,10 @@ const styles = StyleSheet.create({
   performanceLabel: {
     fontSize: 12,
     color: "#90A5B4",
+  },
+  icon: {
+    height: 36,
+    width: 36,
   },
   positive: {
     color: "#00C853",

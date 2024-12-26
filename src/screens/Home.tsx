@@ -237,7 +237,7 @@ const styles = StyleSheet.create({
     marginTop: 28,
     position: "relative",
     alignSelf: "flex-start",
-    marginLeft: 20,
+    marginLeft: "4%",
   },
   circularProgress: {
     width: 150,
@@ -286,9 +286,8 @@ const styles = StyleSheet.create({
   goalText: {
     position: "absolute",
     top: "-10%",
-    left: "40%",
+    left: "10%",
     transform: [{ translateX: -20 }, { translateY: -50 }],
-    marginTop: 8,
     fontSize: 14,
     fontWeight: "600",
     color: "#1976D2",

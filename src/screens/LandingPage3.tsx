@@ -30,7 +30,7 @@ const LandingPage3 = () => {
         Duy trì đủ nước mỗi ngày thật dễ dàng với Water Tracker.
       </Text>
       <TouchableOpacity
-        onPress={() => navigation.navigate("Home")}
+        onPress={() => navigation.navigate("Login")}
         style={styles.button}
       >
         <Text style={styles.buttonText}>Bắt đầu</Text>

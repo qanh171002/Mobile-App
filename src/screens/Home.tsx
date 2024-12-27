@@ -259,8 +259,8 @@ const styles = StyleSheet.create({
   },
   progressRow: {
     position: "absolute",
-    top: "-20%",
-    left: "70%",
+    top: "-60%",
+    left: -20,
     flexDirection: "row",
     alignItems: "center",
     backgroundColor: "#fff",

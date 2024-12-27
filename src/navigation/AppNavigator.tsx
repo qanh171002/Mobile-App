@@ -15,6 +15,8 @@ import Profile from "../screens/Profile";
 import SetGoal from "../screens/SetGoal";
 import WaterTracker from "../screens/WaterTracker";
 import Result from "../screens/Result";
+import LoginPage from "../screens/Login";
+import Login from "../screens/Login";
 
 export type RootStackParamList = {
   LandingPage1: undefined;
@@ -45,6 +47,7 @@ const AppNavigator = () => {
         <Stack.Screen name="LandingPage1" component={LandingPage1} />
         <Stack.Screen name="LandingPage2" component={LandingPage2} />
         <Stack.Screen name="LandingPage3" component={LandingPage3} />
+        <Stack.Screen name="Login" component={Login} />
         <Stack.Screen name="Home" component={Home} />
         <Stack.Screen name="Statistics" component={Statistics} />
         <Stack.Screen name="Setting" component={Setting} />

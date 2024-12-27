@@ -23,11 +23,11 @@ interface Template {
 }
 
 const SetGoal = () => {
-  const [selectedValue, setSelectedValue] = React.useState("Số ly nước");
   const [displayedTemplates, setDisplayedTemplates] = React.useState<
     Template[]
   >([]);
-  const { maxLevel, chooseLevel } = useWaterTracker();
+  const { maxLevel, chooseLevel, selectedValue, setSelectedValue } =
+    useWaterTracker();
 
   React.useEffect(() => {
     const updatedTemplates = templates.map((template) => {

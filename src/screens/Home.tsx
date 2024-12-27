@@ -85,12 +85,12 @@ const Home = () => {
 
       <View style={styles.circularContainer}>
         <View style={styles.circularProgress}>
-          <Text style={styles.circularText}> {currentLevel * 100}ml</Text>
+          <Text style={styles.circularText}> {currentLevel * 200}ml</Text>
         </View>
         <View style={styles.progressDetails}>
           <View style={styles.progressRow}>
             <Ionicons name="water-outline" size={20} color="#1976D2" />
-            <Text style={styles.progressText}>{currentLevel * 100}ml</Text>
+            <Text style={styles.progressText}>{currentLevel * 200}ml</Text>
             <Text style={styles.progressPercentage}>
               {maxLevel > 0
                 ? `${Math.floor((currentLevel / maxLevel) * 100)}%`
@@ -259,9 +259,8 @@ const styles = StyleSheet.create({
   },
   progressRow: {
     position: "absolute",
-    top: "-30%",
+    top: "-20%",
     left: "70%",
-    transform: [{ translateX: -20 }, { translateY: -50 }],
     flexDirection: "row",
     alignItems: "center",
     backgroundColor: "#fff",
@@ -285,9 +284,7 @@ const styles = StyleSheet.create({
   },
   goalText: {
     position: "absolute",
-    top: "-10%",
-    left: "10%",
-    transform: [{ translateX: -20 }, { translateY: -50 }],
+    left: -20,
     fontSize: 14,
     fontWeight: "600",
     color: "#1976D2",

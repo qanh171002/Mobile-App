@@ -3,9 +3,11 @@ import React, { createContext, useContext, useState } from "react";
 interface WaterTrackerContextProps {
   maxLevel: number;
   currentLevel: number;
-  increaseLevel: () => void;
+  increaseLevel: (amount: number) => void;
   decreaseLevel: () => void;
   chooseLevel: (max: number) => void;
+  selectedValue: string;
+  setSelectedValue: (value: string) => void;
 }
 
 const WaterTrackerContext = createContext<WaterTrackerContextProps | undefined>(
@@ -17,9 +19,10 @@ export const WaterTrackerProvider: React.FC<{ children: React.ReactNode }> = ({
 }) => {
   const [currentLevel, setCurrentLevel] = useState(0);
   const [maxLevel, setMaxLevel] = useState(10);
+  const [selectedValue, setSelectedValue] = useState("Số ly nước");
 
-  const increaseLevel = () => {
-    setCurrentLevel((prev) => Math.min(prev + 1, 10));
+  const increaseLevel = (amount: number) => {
+    setCurrentLevel((prev) => Math.min(prev + amount, 10));
   };
 
   const decreaseLevel = () => {
@@ -38,6 +41,8 @@ export const WaterTrackerProvider: React.FC<{ children: React.ReactNode }> = ({
         increaseLevel,
         decreaseLevel,
         chooseLevel,
+        selectedValue,
+        setSelectedValue,
       }}
     >
       {children}

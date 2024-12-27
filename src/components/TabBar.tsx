@@ -1,6 +1,14 @@
 // src/components/TabBar.tsx
-import React from "react";
-import { TouchableOpacity, View, StyleSheet, Text } from "react-native";
+import React, { useState } from "react";
+import {
+  TouchableOpacity,
+  View,
+  StyleSheet,
+  Text,
+  Modal,
+  Dimensions,
+  Animated,
+} from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { useNavigation, useRoute } from "@react-navigation/native";
@@ -10,9 +18,10 @@ import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { useWaterTracker } from "../contexts/WaterTrackerContext";
 
 type TabBarProps = {};
+const { height } = Dimensions.get("window");
 
 export default function TabBar({}: TabBarProps) {
-  const { increaseLevel } = useWaterTracker();
+  const { increaseLevel, selectedValue } = useWaterTracker();
   const navigation =
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();
 
@@ -20,6 +29,26 @@ export default function TabBar({}: TabBarProps) {
 
   const getIconColor = (tabName: string) => {
     return route.name === tabName ? "#1976D2" : "black";
+  };
+
+  const [visible, setVisible] = useState(false);
+  const translateY = React.useRef(new Animated.Value(height)).current;
+
+  const openModal = () => {
+    setVisible(true);
+    Animated.timing(translateY, {
+      toValue: 0,
+      duration: 300,
+      useNativeDriver: true,
+    }).start();
+  };
+
+  const closeModal = () => {
+    Animated.timing(translateY, {
+      toValue: height,
+      duration: 300,
+      useNativeDriver: true,
+    }).start(() => setVisible(false));
   };
 
   return (
@@ -46,12 +75,50 @@ export default function TabBar({}: TabBarProps) {
 
       <TouchableOpacity
         style={styles.addButton}
-        onPress={() => {
-          increaseLevel();
-        }}
+        // onPress={() => {
+        //   increaseLevel();
+        // }}
+        onPress={openModal}
       >
         <FontAwesome name="plus" size={24} color="white" />
       </TouchableOpacity>
+      <Modal visible={visible} transparent animationType="none">
+        <View style={styles.overlay}>
+          <TouchableOpacity style={styles.background} onPress={closeModal} />
+          <Animated.View
+            style={[styles.modalContent, { transform: [{ translateY }] }]}
+          >
+            <Text style={styles.title}>Thêm lượng nước</Text>
+            <View style={styles.waterOptions}>
+              {selectedValue === "Số ly nước"
+                ? [1, 2, 3, 4].map((amount) => (
+                    <TouchableOpacity
+                      key={amount}
+                      style={styles.optionButton}
+                      onPress={() => {
+                        increaseLevel(amount);
+                        closeModal();
+                      }}
+                    >
+                      <Text style={styles.optionText}>{amount} ly</Text>
+                    </TouchableOpacity>
+                  ))
+                : [200, 400, 600, 800].map((amount) => (
+                    <TouchableOpacity
+                      key={amount}
+                      style={styles.optionButton}
+                      onPress={() => {
+                        increaseLevel(amount / 200);
+                        closeModal();
+                      }}
+                    >
+                      <Text style={styles.optionText}>{amount} ml</Text>
+                    </TouchableOpacity>
+                  ))}
+            </View>
+          </Animated.View>
+        </View>
+      </Modal>
       <TouchableOpacity
         onPress={() => navigation.navigate("Setting")}
         style={styles.tabButton}
@@ -103,5 +170,59 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     top: -20,
+  },
+  overlay: {
+    flex: 1,
+    justifyContent: "flex-end",
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+  },
+
+  background: {
+    ...StyleSheet.absoluteFillObject,
+  },
+
+  modalContent: {
+    backgroundColor: "#fff",
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    padding: 20,
+    height: "60%",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: -2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 5,
+    elevation: 5,
+  },
+  title: {
+    fontSize: 22,
+    fontWeight: "600",
+    marginBottom: 20,
+    textAlign: "center",
+    color: "#1976D2",
+  },
+  waterOptions: {
+    flexDirection: "row", // Sắp xếp các mục theo hàng ngang.
+    flexWrap: "wrap", // Cho phép các mục tự xuống dòng nếu không đủ không gian.
+    justifyContent: "space-between", // Căn đều khoảng cách giữa các cột.
+    marginTop: 10,
+  },
+
+  optionButton: {
+    backgroundColor: "#E3F2FD",
+    paddingVertical: 15,
+    borderRadius: 12,
+    marginBottom: 10, // Khoảng cách giữa các hàng.
+    width: "48%", // Đảm bảo mỗi nút chiếm gần 50% chiều rộng container.
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 5,
+    elevation: 3,
+  },
+  optionText: {
+    fontSize: 16,
+    fontWeight: "600",
+    color: "#1976D2",
   },
 });

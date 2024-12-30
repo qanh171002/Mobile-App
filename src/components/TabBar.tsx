@@ -1,33 +1,66 @@
-import React from "react";
-import { TouchableOpacity, View, StyleSheet, Text } from "react-native";
+import React, { useRef, useEffect } from "react";
+import { TouchableOpacity, View, StyleSheet, Text, Animated } from "react-native";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../navigation/AppNavigator";
 import HomeIcon from "../../assets/images/home.jsx";
-import StatisticsIcon from "../../assets/images/statistics.jsx";
+import StatisticIcon from "../../assets/images/statistic.jsx";
 import SettingIcon from "../../assets/images/setting.jsx";
 import ProfileIcon from "../../assets/images/profile.jsx";
+import ArticleIcon from "../../assets/images/article.jsx";
+import AddIcon from "../../assets/images/add.jsx";
 
 interface TabButtonProps {
   routeName: string;
   label: string;
   IconComponent: React.ComponentType<{ fill: string; width: number; height: number }>;
   target: keyof RootStackParamList;
+  onPress?: () => void;
 }
 
-const TabButton: React.FC<TabButtonProps> = ({ routeName, label, IconComponent, target }) => {
+const TabButton: React.FC<TabButtonProps> = ({ routeName, label, IconComponent, target, onPress }) => {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const route = useRoute();
+  const isFocused = route.name === routeName;
+  const scaleAnim = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    if (isFocused && routeName === "Home") {
+      Animated.spring(scaleAnim, {
+        toValue: 1,
+        useNativeDriver: true,
+      }).start();
+    } else {
+      scaleAnim.setValue(0);
+    }
+  }, [isFocused, routeName]);
+
+  const handlePress = () => {
+    if (routeName === "Home" && onPress) {
+      navigation.navigate(target);
+      onPress();
+    } else {
+      navigation.navigate(target);
+    }
+  };
 
   return (
       <TouchableOpacity
-          onPress={() => navigation.navigate(target)}
+          onPress={handlePress}
           style={styles.tabButton}
       >
-        <IconComponent fill={route.name === routeName ? "#1976D2" : "#121212"}
-                       width={route.name === routeName ? 28 : 24}
-                       height={route.name === routeName ? 28 : 24} />
-        <Text style={[styles.tabText, route.name === routeName && styles.selectedTabText]}>{label}</Text>
+        {routeName === "Home" && isFocused ? (
+            <Animated.View style={[styles.roundIcon, { transform: [{ scale: scaleAnim }] }]}>
+              <AddIcon width={66} height={66} />
+              <View style={styles.iconOverlay}>
+              </View>
+            </Animated.View>
+        ) : (
+            <>
+              <IconComponent fill={isFocused ? "#0ea6e9" : "#bcbcbc"} width={isFocused ? 28 : 24} height={isFocused ? 28 : 24} />
+              <Text style={[styles.tabText, isFocused && styles.selectedTabText]}>{label}</Text>
+            </>
+        )}
       </TouchableOpacity>
   );
 };
@@ -35,8 +68,9 @@ const TabButton: React.FC<TabButtonProps> = ({ routeName, label, IconComponent, 
 export default function TabBar() {
   return (
       <View style={styles.tabBar}>
+        <TabButton routeName="Article" label="Article" IconComponent={ArticleIcon} target="Article" />
+        <TabButton routeName="Statistic" label="Statistic" IconComponent={StatisticIcon} target="Statistic" />
         <TabButton routeName="Home" label="Home" IconComponent={HomeIcon} target="Home" />
-        <TabButton routeName="Statistics" label="Statistics" IconComponent={StatisticsIcon} target="Statistics" />
         <TabButton routeName="Setting" label="Setting" IconComponent={SettingIcon} target="Setting" />
         <TabButton routeName="Profile" label="Profile" IconComponent={ProfileIcon} target="Profile" />
       </View>
@@ -52,38 +86,41 @@ const styles = StyleSheet.create({
     bottom: 0,
     width: "100%",
     backgroundColor: "#fff",
-    padding: 10,
+    paddingHorizontal: -10,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: -5 },
     shadowOpacity: 0.06,
     shadowRadius: 5,
     elevation: 5,
+    height: 70,
   },
   tabButton: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
+    height: 60,
   },
   tabText: {
-    color: "#121212",
+    color: "#bcbcbc",
     fontSize: 12,
-    fontFamily: "Poppins_Medium",
+    fontFamily: "Cera_Medium",
   },
   selectedTabText: {
-    color: "#1976D2",
-    fontSize: 14,
-    fontFamily: "Poppins_SemiBold",
+    color: "#0ea6e9",
+    fontSize: 13,
+    fontFamily: "Cera_Bold",
   },
-  addButton: {
-    backgroundColor: "#fff",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.1,
-    shadowRadius: 5,
-    padding: 15,
-    borderRadius: 50,
+  roundIcon: {
+    width: 66,
+    height: 66,
     justifyContent: "center",
     alignItems: "center",
-    top: -20,
+    position: "absolute",
+    top: -15,
+  },
+  iconOverlay: {
+    position: "absolute",
+    justifyContent: "center",
+    alignItems: "center",
   },
 });

@@ -6,7 +6,7 @@ import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../navigation/AppNavigator";
 import TabBar from "../components/TabBar";
 
-export default function Statistics() {
+export default function Statistic() {
   const navigation =
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();
 

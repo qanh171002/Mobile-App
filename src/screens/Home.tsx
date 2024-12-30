@@ -1,122 +1,159 @@
-import React, { useState, useEffect } from "react";
-import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
+import React, { useState } from "react";
+import {
+  Dimensions,
+  View,
+  Text,
+  StyleSheet,
+  Animated,
+  Platform,
+  TouchableOpacity,
+} from "react-native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { useNavigation } from "@react-navigation/native";
 import { RootStackParamList } from "../navigation/AppNavigator";
-import { Ionicons } from "@expo/vector-icons";
 import TabBar from "../components/TabBar";
-import { useUser } from "../contexts/UserContext";
 import { useWaterTracker } from "../contexts/WaterTrackerContext";
-import WaterDroplet from "../../assets/images/water_droplet";
-import WaterAnimation from "../components/WaterAnimation"; // Import the WaterAnimation component
+import WaterAnimation from "../components/WaterAnimation";
+import Arrow from "../../assets/images/arrow.jsx";
+import DateTimePicker from "@react-native-community/datetimepicker";
+import { PanGestureHandler, GestureHandlerRootView } from "react-native-gesture-handler";
 
-const getGreeting = () => {
-  const currentHour = new Date().getHours();
-  if (currentHour < 12) {
-    return "Good morning";
-  } else if (currentHour < 18) {
-    return "Good afternoon";
-  } else {
-    return "Good evening";
-  }
-};
+const windowWidth = Dimensions.get("window").width;
 
 const Home = () => {
-  const { user } = useUser();
   const { currentLevel, maxLevel } = useWaterTracker();
-  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+  const navigation =
+      useNavigation<NativeStackNavigationProp<RootStackParamList>>();
 
-  const [timeValue, setTimeValue] = useState(() => {
-    const currentDate = new Date();
-    const options: Intl.DateTimeFormatOptions = {
-      hour: "numeric",
-      minute: "numeric",
-      hour12: true,
-    };
-    return currentDate.toLocaleString("vi-VN", options);
-  });
+  const [currentDate, setCurrentDate] = useState(new Date());
+  const [showDatePicker, setShowDatePicker] = useState(false); // Trạng thái để hiện Date Picker
+  const today = new Date();
+  const translateX = useState(new Animated.Value(0))[0];
+  const [isAnimating, setIsAnimating] = useState(false); // Trạng thái để khóa animation
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      const currentDate = new Date();
-      const options: Intl.DateTimeFormatOptions = {
-        hour: "numeric",
-        minute: "numeric",
-        hour12: true,
-      };
-      setTimeValue(currentDate.toLocaleString("en-US", options));
-    }, 10000); // Update every minute
+  const isToday = (date: Date) => {
+    return (
+        date.getDate() === today.getDate() &&
+        date.getMonth() === today.getMonth() &&
+        date.getFullYear() === today.getFullYear()
+    );
+  };
 
-    return () => clearInterval(interval); // Cleanup on unmount
-  }, []);
+  const onSwipeGesture = (event: any) => {
+    if (isAnimating) return; // Nếu đang xử lý animation, khóa vuốt
 
-  const handleAddGoal = () => {
-    navigation.navigate("SetGoal");
+    const swipeThreshold = 50; // Ngưỡng vuốt
+
+    if (event.nativeEvent.translationX < -swipeThreshold && !isToday(currentDate)) {
+      const nextDate = new Date(currentDate);
+      nextDate.setDate(currentDate.getDate() + 1);
+      handleSwipeAnimation(-1, nextDate);
+    } else if (event.nativeEvent.translationX > swipeThreshold) {
+      const prevDate = new Date(currentDate);
+      prevDate.setDate(currentDate.getDate() - 1);
+      handleSwipeAnimation(1, prevDate);
+    }
+  };
+
+  // Thực hiện animation
+  const handleSwipeAnimation = (direction: number, newDate: Date) => {
+    setIsAnimating(true); // Khóa animation
+    Animated.timing(translateX, {
+      toValue: direction * windowWidth, // Xác định điểm dịch chuyển
+      duration: 300, // Thời lượng animation
+      useNativeDriver: true,
+    }).start(() => {
+      setCurrentDate(newDate); // Cập nhật ngày khi vuốt xong
+      translateX.setValue(-direction * windowWidth); // Reset vị trí sau dịch chuyển
+      Animated.timing(translateX, {
+        toValue: 0, // Trả về trạng thái ban đầu
+        duration: 300,
+        useNativeDriver: true,
+      }).start(() => {
+        setIsAnimating(false); // Mở khóa animation sau khi hoàn thành hoàn toàn
+      });
+    });
+  };
+
+  // Hàm mở DatePicker
+  const openDatePicker = () => {
+    setShowDatePicker(true);
+  };
+
+  // Xử lý khi chọn ngày trong DatePicker
+  const handleDateChange = (event: any, selectedDate?: Date) => {
+    setShowDatePicker(false); // Đóng DatePicker khi người dùng chọn xong
+    if (selectedDate) {
+      setCurrentDate(selectedDate); // Cập nhật ngày được chọn
+    }
+  };
+
+  // Hiển thị ngày
+  const renderDateLabel = () => {
+    return isToday(currentDate)
+        ? "Today"
+        : currentDate.toLocaleDateString(); // Hiển thị ngày/tháng/năm khi không phải hôm nay
   };
 
   return (
-      <View style={styles.container}>
-        <View style={styles.headerContainer}>
-          <View style={styles.header}>
-            <Text style={styles.greet}>{getGreeting()},</Text>
-            <Text style={styles.username}>
-              {user.fname} {user.lname}
-            </Text>
-          </View>
-          <TouchableOpacity
-              style={styles.notifyBtn}
-              onPress={() => navigation.navigate("WaterTracker")}
-          >
-            <Ionicons name="notifications-sharp" size={24} color="#1976D2" />
-            <View style={styles.notificationDot} />
-          </TouchableOpacity>
-        </View>
-
-        <View style={styles.mainTableWrapper}>
-          <WaterAnimation />
-          <View style={styles.mainTable}>
-            <View style={styles.leftSide}>
-              <Text style={styles.time}>{timeValue}</Text>
-              <Text style={styles.waterAmount}>
-                {currentLevel * 200} ml ({currentLevel} cups)
-              </Text>
-              <TouchableOpacity style={styles.addBtn} onPress={handleAddGoal}>
-                <Text style={styles.addBtnText}>Add Goals</Text>
+      <GestureHandlerRootView style={{ flex: 1 }}>
+        <PanGestureHandler onGestureEvent={onSwipeGesture}>
+          <View style={styles.container}>
+            {/* Header */}
+            <View style={styles.headerContainer}>
+              <TouchableOpacity onPress={openDatePicker} style={styles.calendar}>
+                <Text style={styles.date}>{renderDateLabel()}</Text>
+                <Arrow style={styles.arrow} width={16} height={16} />
               </TouchableOpacity>
             </View>
-            <WaterDroplet style={styles.droplet} />
-          </View>
-        </View>
 
-        <View style={styles.circularContainer}>
-          <View style={styles.circularProgress}>
-            <Text style={styles.circularText}> {currentLevel * 200} ml</Text>
-          </View>
-          <View style={styles.progressDetails}>
-            <View style={styles.progressRow}>
-              <Ionicons name="water-outline" size={20} color="#1976D2" />
-              <Text style={styles.progressText}>{currentLevel * 200} ml</Text>
-              <Text style={styles.progressPercentage}>
-                {maxLevel > 0
-                    ? `${Math.floor((currentLevel / maxLevel) * 100)}%`
-                    : "0%"}
-              </Text>
+            {/* Date Picker */}
+            {showDatePicker && (
+                <DateTimePicker
+                    value={currentDate}
+                    mode="date"
+                    display={Platform.OS === "ios" ? "inline" : "default"}
+                    onChange={handleDateChange}
+                />
+            )}
+
+            {/* Animated View */}
+            <Animated.View
+                style={[
+                  styles.mainTableWrapper,
+                  { transform: [{ translateX }] },
+                ]}
+            >
+              <WaterAnimation />
+              <View style={styles.centerContent}>
+                <Text style={styles.percentage}>
+                  {Math.floor((currentLevel / maxLevel) * 100)}%
+                </Text>
+              </View>
+            </Animated.View>
+
+            <View style={styles.infoContainer}>
+              {/* Cột bên trái: Labels */}
+              <View style={styles.column}>
+                <Text style={styles.labelText}>Target</Text>
+                <Text style={styles.labelText}>Drank</Text>
+                <Text style={styles.labelText}>Remaining</Text>
+                <Text style={styles.labelText}>Drinks count</Text>
+              </View>
+              {/* Cột bên phải: Values */}
+              <View style={styles.column}>
+                <Text style={styles.valueText}>0 ml</Text>
+                <Text style={styles.valueText}>0</Text>
+                <Text style={styles.valueText}>0</Text>
+                <Text style={styles.valueText}>0</Text>
+              </View>
             </View>
-            <Text style={styles.goalText}>Target: {maxLevel * 200} ml</Text>
-          </View>
-        </View>
 
-        <TouchableOpacity
-            style={styles.dashboardBtn}
-            onPress={() => navigation.navigate("Result")}
-        >
-          <Text style={styles.dashboardBtnText}>Result</Text>
-        </TouchableOpacity>
-        <Text style={styles.finishText}>
-          You have completed {Math.floor((currentLevel / maxLevel) * 100)}% of your goal today, keep it up!
-        </Text>
-        <TabBar />
-      </View>
+            {/* Tab Navigation */}
+            <TabBar />
+          </View>
+        </PanGestureHandler>
+      </GestureHandlerRootView>
   );
 };
 
@@ -132,193 +169,74 @@ const styles = StyleSheet.create({
   headerContainer: {
     flexDirection: "row",
     width: "100%",
-    alignItems: "flex-start",
-    justifyContent: "space-between",
-    paddingHorizontal: "5%",
+    alignItems: "center",
+    justifyContent: "center",
     paddingTop: 36,
   },
-  header: {
-    flexDirection: "column",
-    alignItems: "flex-start",
+  calendar: {
+    flexDirection: "row",
   },
-  greet: {
-    fontSize: 18,
-    fontWeight: "500",
-    color: "#90A5B4",
+  arrow: {
+    transform: [{ translateY: 12 }],
   },
-  username: {
-    fontSize: 27,
-    fontFamily: "VPoppins_Bold",
-  },
-  notifyBtn: {
-    padding: 10,
-    backgroundColor: "#fff",
-    borderRadius: 70,
-    shadowColor: "rgba(27, 169, 225, 0.08)",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.08,
-    shadowRadius: 45,
-    elevation: 5,
-  },
-  notificationDot: {
-    position: "absolute",
-    top: 0,
-    right: 5,
-    width: 10,
-    height: 10,
-    backgroundColor: "red",
-    borderRadius: 6,
+  date: {
+    fontFamily: "Cera_Black",
+    fontSize: 26,
+    color: "#121212",
+    marginRight: 10,
+    marginBottom: 10,
   },
   mainTableWrapper: {
-    position: "relative",
-    height: 160,
-    width: "90%",
-    alignSelf: "center",
+    width: windowWidth * 0.9,
+    height: windowWidth * 0.9,
     marginTop: 24,
     backgroundColor: "#fff",
-    borderRadius: 16,
     overflow: "hidden",
-  },
-  wave: {
-    position: "absolute",
-    bottom: "-20%",
-  },
-  mainTable: {
-    flexDirection: "row",
-    gap: 36,
-    position: "absolute",
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    paddingHorizontal: 20,
-    paddingVertical: "4%",
-  },
-  leftSide: {
-    flexDirection: "column",
-  },
-  time: {
-    fontSize: 20,
-    fontFamily: "Poppins_Bold",
-    lineHeight: 32,
-  },
-  waterAmount: {
-    color: "#90A5B4",
-  },
-  icon: {
-    width: 100,
-    height: 100,
-    marginTop: 16,
-  },
-  addBtn: {
-    marginTop: 30,
-    backgroundColor: "#fff",
-    width: 95,
-    paddingHorizontal: 20,
-    paddingVertical: 10,
-    alignItems: "center",
-    borderRadius: 25,
-  },
-  addBtnText: {
-    color: "#121212",
-    fontFamily: "Poppins_SemiBold",
-    fontSize: 12,
-    textAlign: "center",
-    width: 100,
-  },
-  circularContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginTop: 28,
-    position: "relative",
-    alignSelf: "flex-start",
-    marginLeft: "4%",
-  },
-  circularProgress: {
-    width: 150,
-    height: 150,
-    borderRadius: 75,
+    borderRadius: windowWidth * 0.45,
     borderWidth: 10,
-    borderColor: "#1976D2",
+    borderColor: "#bedcf8",
+  },
+  centerContent: {
+    position: "absolute",
+    top: "50%",
+    left: "50%",
+    width: windowWidth * 0.45,
+    height: windowWidth * 0.45,
+    transform: [
+      { translateX: -windowWidth * 0.225 },
+      { translateY: -windowWidth * 0.225 },
+    ],
     justifyContent: "center",
     alignItems: "center",
-    marginLeft: 20,
   },
-  circularText: {
-    fontSize: 18,
-    fontWeight: "700",
+  percentage: {
+    fontFamily: "Cera_Black",
+    fontSize: 40,
+    color: "#bedcf8",
   },
-  progressDetails: {
-    marginTop: 16,
-    alignItems: "center",
-  },
-  progressRow: {
-    position: "absolute",
-    top: "-60%",
-    left: -20,
+  infoContainer: {
     flexDirection: "row",
+    justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#fff",
-    padding: 20,
-    borderRadius: 16,
-    shadowColor: "#1BA9E1",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 5,
+    marginTop: "8%",
+    width: "50%",
   },
-  progressText: {
+  column: {
+    justifyContent: "space-around",
+    padding: 10,
+  },
+  labelText: {
+    fontFamily: "Cera_Bold",
     fontSize: 16,
-    marginLeft: 8,
-    marginRight: 8,
-    fontWeight: "600",
+    color: "#121212", // Màu xám cho nhãn
+    marginBottom: 8,
   },
-  progressPercentage: {
+  valueText: {
+    fontFamily: "Cera_Black",
     fontSize: 16,
-    color: "#1976D2",
-  },
-  goalText: {
-    position: "absolute",
-    left: -20,
-    fontSize: 14,
-    fontWeight: "600",
-    color: "#1976D2",
-    backgroundColor: "#fff",
-    paddingVertical: 8,
-    paddingHorizontal: 16,
-    borderRadius: 12,
-    shadowColor: "#1BA9E1",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
-    textAlign: "center",
-  },
-  dashboardBtn: {
-    paddingVertical: 20,
-    paddingHorizontal: 50,
-    backgroundColor: "#1976D2",
-    borderRadius: 8,
-    marginTop: 40,
-  },
-  dashboardBtnText: {
-    color: "#fff",
-    fontSize: 16,
-    fontWeight: "600",
-  },
-  finishText: {
-    width: 220,
-    textAlign: "center",
-    paddingHorizontal: 2,
-    color: "#90A5B4",
-    marginTop: 20,
-  },
-  droplet: {
-    position: "absolute",
-    top: 0,
-    right: 0,
-    bottom: 0,
-    transform: [{ translateY: "10%" }, { translateX: "53%" }],
+    color: "#0ea6e9", // Màu đen cho giá trị
+    marginBottom: 8,
+    textAlign: "right",
   },
 });
 

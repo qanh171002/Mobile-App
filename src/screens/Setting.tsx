@@ -7,8 +7,12 @@ import {
   TouchableOpacity,
 } from "react-native";
 import TabBar from "../components/TabBar";
+import { useTheme } from "../contexts/ThemeContext";
+import { useWaterTracker } from "../contexts/WaterTrackerContext";
 
 export default function HistoryScreen() {
+  const { isDarkTheme, toggleTheme, colors } = useTheme();
+  const { selectedValue, maxLevel } = useWaterTracker();
   const [activeTab, setActiveTab] = useState("history");
 
   const weekDays = [
@@ -42,13 +46,15 @@ export default function HistoryScreen() {
   const renderReportItem = ({ item }: { item: any }) => (
     <View style={styles.reportItem}>
       <View style={[styles.dot, { backgroundColor: item.color }]} />
-      <Text style={styles.reportLabel}>{item.label}</Text>
+      <Text style={[styles.reportLabel, { color: colors.text }]}>
+        {item.label}
+      </Text>
       <Text style={styles.reportValue}>{item.value}</Text>
     </View>
   );
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
       {/* Tab Header */}
       <View style={styles.tabHeader}>
         <TouchableOpacity
@@ -95,7 +101,9 @@ export default function HistoryScreen() {
           </View>
 
           <View style={styles.reportHeader}>
-            <Text style={styles.reportHeaderTitle}>Báo cáo lượng nước</Text>
+            <Text style={[styles.reportHeaderTitle, { color: colors.text }]}>
+              Báo cáo lượng nước
+            </Text>
           </View>
 
           <View style={styles.reportContainer}>
@@ -110,28 +118,45 @@ export default function HistoryScreen() {
       ) : (
         <View style={styles.settingsContainer}>
           <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Cài đặt nhắc nhở</Text>
+            <Text style={[styles.sectionTitle, { color: colors.text }]}>
+              Cài đặt nhắc nhở
+            </Text>
+
             <View style={styles.option}>
-              <Text style={styles.optionText}>Âm thanh nhắc nhở</Text>
-            </View>
-            <View style={styles.option}>
-              <Text style={styles.optionText}>Chế độ nhắc nhở</Text>
+              <Text style={[styles.optionText, { color: colors.text }]}>
+                Chế độ nhắc nhở
+              </Text>
             </View>
           </View>
 
           <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Cài đặt chung</Text>
-            <View style={styles.option}>
-              <Text style={styles.optionText}>Gỡ quảng cáo</Text>
+            <Text style={[styles.sectionTitle, { color: colors.text }]}>
+              Cài đặt chung
+            </Text>
+
+            <TouchableOpacity style={styles.unitOption} onPress={toggleTheme}>
+              <Text style={[styles.unitText, { color: colors.text }]}>
+                Chế độ sáng tối
+              </Text>
+              <Text style={[styles.unitText, { color: colors.primary }]}>
+                {isDarkTheme ? "Chế độ tối" : "Chế độ sáng"}
+              </Text>
+            </TouchableOpacity>
+            <View style={styles.unitOption}>
+              <Text style={[styles.unitText, { color: colors.text }]}>
+                Đơn vị
+              </Text>
+              <Text style={[styles.unitText, { color: colors.primary }]}>
+                {selectedValue === "Số ly nước" ? "Số ly nước" : "Số ml"}
+              </Text>
             </View>
-            <View style={styles.option}>
-              <Text style={styles.optionText}>Giao diện sáng tối</Text>
-            </View>
-            <View style={styles.option}>
-              <Text style={styles.optionText}>Đơn vị</Text>
-            </View>
-            <View style={styles.option}>
-              <Text style={styles.optionText}>Mục tiêu uống</Text>
+            <View style={styles.unitOption}>
+              <Text style={[styles.unitText, { color: colors.text }]}>
+                Mục tiêu uống
+              </Text>
+              <Text style={[styles.unitText, { color: colors.primary }]}>
+                {maxLevel * 200}ml
+              </Text>
             </View>
           </View>
         </View>
@@ -285,5 +310,19 @@ const styles = StyleSheet.create({
     textAlign: "left",
     width: "100%",
     marginLeft: 16,
+  },
+  unitOption: {
+    flexDirection: "row",
+    paddingVertical: 15,
+    paddingHorizontal: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: "#ddd",
+    width: "100%",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  unitText: {
+    fontSize: 16,
+    color: "#1976D2",
   },
 });

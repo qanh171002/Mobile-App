@@ -8,6 +8,7 @@ import TabBar from "../components/TabBar";
 import Svg, { Path } from "react-native-svg";
 import { useUser } from "../contexts/UserContext";
 import { useWaterTracker } from "../contexts/WaterTrackerContext";
+import { useTheme } from "../contexts/ThemeContext";
 
 const currentDate = new Date();
 const options: Intl.DateTimeFormatOptions = {
@@ -18,6 +19,7 @@ const options: Intl.DateTimeFormatOptions = {
 const timeValue = currentDate.toLocaleString("vi-VN", options);
 
 const Home = () => {
+  const { colors } = useTheme();
   const { user } = useUser();
   const { currentLevel, maxLevel } = useWaterTracker();
   const navigation =
@@ -28,16 +30,16 @@ const Home = () => {
   };
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: colors.subBg }]}>
       <View style={styles.headerContainer}>
         <View style={styles.header}>
-          <Text style={styles.greet}>Chào buổi sáng,</Text>
-          <Text style={styles.username}>
+          <Text style={[styles.greet, { color: colors.text }]}>Xin chào,</Text>
+          <Text style={[styles.username, { color: colors.text }]}>
             {user.fname} {user.lname}
           </Text>
         </View>
         <TouchableOpacity
-          style={styles.notifyBtn}
+          style={[styles.notifyBtn, { backgroundColor: colors.card }]}
           onPress={() => navigation.navigate("WaterTracker")}
         >
           <Ionicons name="notifications-sharp" size={24} color="#1976D2" />
@@ -45,7 +47,7 @@ const Home = () => {
         </TouchableOpacity>
       </View>
 
-      <View style={styles.mainTableWrapper}>
+      <View style={[styles.mainTableWrapper, { backgroundColor: colors.card }]}>
         <Svg
           height="80%"
           width="100%"
@@ -66,7 +68,9 @@ const Home = () => {
 
         <View style={styles.mainTable}>
           <View style={styles.leftSide}>
-            <Text style={styles.time}>{timeValue}</Text>
+            <Text style={[styles.time, { color: colors.text }]}>
+              {timeValue}
+            </Text>
             <Text style={styles.waterAmount}>
               {currentLevel * 200}ml nước ({currentLevel} ly)
             </Text>
@@ -85,19 +89,26 @@ const Home = () => {
 
       <View style={styles.circularContainer}>
         <View style={styles.circularProgress}>
-          <Text style={styles.circularText}> {currentLevel * 200}ml</Text>
+          <Text style={[styles.circularText, { color: colors.text }]}>
+            {" "}
+            {currentLevel * 200}ml
+          </Text>
         </View>
         <View style={styles.progressDetails}>
-          <View style={styles.progressRow}>
+          <View style={[styles.progressRow, { backgroundColor: colors.card }]}>
             <Ionicons name="water-outline" size={20} color="#1976D2" />
-            <Text style={styles.progressText}>{currentLevel * 200}ml</Text>
+            <Text style={[styles.progressText, { color: colors.text }]}>
+              {currentLevel * 200}ml
+            </Text>
             <Text style={styles.progressPercentage}>
               {maxLevel > 0
                 ? `${Math.floor((currentLevel / maxLevel) * 100)}%`
                 : "0%"}
             </Text>
           </View>
-          <Text style={styles.goalText}>Mục tiêu: {maxLevel * 200}ml</Text>
+          <Text style={[styles.goalText, { backgroundColor: colors.card }]}>
+            Mục tiêu: {maxLevel * 200}ml
+          </Text>
         </View>
       </View>
 
@@ -129,7 +140,6 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "flex-start",
     alignItems: "center",
-    backgroundColor: "#F4F8FB",
     paddingTop: 40,
     flexDirection: "column",
   },
@@ -148,7 +158,6 @@ const styles = StyleSheet.create({
   greet: {
     fontSize: 16,
     fontWeight: "500",
-    color: "#90A5B4",
     marginBottom: 8,
   },
   username: {
@@ -181,7 +190,6 @@ const styles = StyleSheet.create({
     width: "80%",
     alignSelf: "center",
     marginTop: 24,
-    backgroundColor: "#fff",
     borderRadius: 16,
     overflow: "hidden",
   },

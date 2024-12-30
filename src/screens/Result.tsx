@@ -4,6 +4,7 @@ import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { useNavigation } from "@react-navigation/native";
 import { RootStackParamList } from "../navigation/AppNavigator";
 import { useWaterTracker } from "../contexts/WaterTrackerContext";
+import { useTheme } from "../contexts/ThemeContext";
 
 const currentDate = new Date();
 const dateValue = `${currentDate.getDate()} tháng ${
@@ -11,6 +12,7 @@ const dateValue = `${currentDate.getDate()} tháng ${
 } `;
 
 const Result: React.FC = () => {
+  const { colors } = useTheme();
   const { currentLevel, maxLevel } = useWaterTracker();
   const navigation =
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();
@@ -22,8 +24,10 @@ const Result: React.FC = () => {
   const isGoalAchieved = currentLevel >= maxLevel;
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.date}>Hôm nay - {dateValue}</Text>
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
+      <Text style={[styles.date, { color: colors.text }]}>
+        Hôm nay - {dateValue}
+      </Text>
       <Text style={styles.greeting}>Chào, Anh T</Text>
 
       <Image

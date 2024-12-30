@@ -14,6 +14,7 @@ import { RootStackParamList } from "../navigation/AppNavigator";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import WaterGlass from "../components/WaterGlass";
 import { useWaterTracker } from "../contexts/WaterTrackerContext";
+import { useTheme } from "../contexts/ThemeContext";
 
 const currentDate = new Date();
 const dateValue = `${currentDate.getDate()} tháng ${
@@ -21,6 +22,7 @@ const dateValue = `${currentDate.getDate()} tháng ${
 } ${currentDate.getFullYear()}`;
 
 const WaterTracker = () => {
+  const { colors } = useTheme();
   const { currentLevel, maxLevel } = useWaterTracker();
 
   const [progress, setProgress] = useState(0);
@@ -38,27 +40,31 @@ const WaterTracker = () => {
   };
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: colors.subBg }]}>
       <View style={styles.header}>
         <TouchableOpacity onPress={handleBack} style={styles.backIcon}>
           <AntDesign name="arrowleft" size={24} color="#1976D2" />
         </TouchableOpacity>
         <View style={styles.headerTitleContainer}>
-          <Text style={styles.headerText}>Lượng nước uống</Text>
+          <Text style={[styles.headerText, { color: colors.text }]}>
+            Lượng nước uống
+          </Text>
         </View>
       </View>
-      <View style={styles.glassContainer}>
+      <View style={[styles.glassContainer, { backgroundColor: colors.subBg }]}>
         <WaterGlass currentLevel={currentLevel} />
       </View>
 
-      <View style={styles.sectionContainer}>
+      <View style={[styles.sectionContainer, { backgroundColor: colors.card }]}>
         <View style={styles.dateContainer}>
           <Text style={styles.dateText}>Ngày & Giờ</Text>
           <Text style={styles.dateValue}>{dateValue}</Text>
         </View>
 
         <View style={styles.goalContainer}>
-          <Text style={styles.goalTitle}>Xem mục tiêu</Text>
+          <Text style={[styles.goalTitle, { color: colors.text }]}>
+            Xem mục tiêu
+          </Text>
           <View style={styles.progressCircle}>
             <Svg height="100" width="100" viewBox="0 0 100 100">
               <Circle
@@ -80,7 +86,9 @@ const WaterTracker = () => {
                 strokeDashoffset={282.6 * ((100 - progress) / 100)}
               />
             </Svg>
-            <Text style={styles.progressText}>{progress}%</Text>
+            <Text style={[styles.progressText, { color: colors.text }]}>
+              {progress}%
+            </Text>
           </View>
 
           <View style={styles.performanceContainer}>

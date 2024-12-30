@@ -16,19 +16,21 @@ import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../navigation/AppNavigator";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { useWaterTracker } from "../contexts/WaterTrackerContext";
+import { useTheme } from "../contexts/ThemeContext";
 
 type TabBarProps = {};
 const { height } = Dimensions.get("window");
 
 export default function TabBar({}: TabBarProps) {
   const { increaseLevel, selectedValue } = useWaterTracker();
+  const { colors } = useTheme();
   const navigation =
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();
 
   const route = useRoute();
 
   const getIconColor = (tabName: string) => {
-    return route.name === tabName ? "#1976D2" : "black";
+    return route.name === tabName ? "#1976D2" : colors.icon;
   };
 
   const [visible, setVisible] = useState(false);
@@ -52,7 +54,7 @@ export default function TabBar({}: TabBarProps) {
   };
 
   return (
-    <View style={styles.tabBar}>
+    <View style={[styles.tabBar, { backgroundColor: colors.background }]}>
       <TouchableOpacity
         onPress={() => navigation.navigate("Home")}
         style={styles.tabButton}
@@ -80,13 +82,17 @@ export default function TabBar({}: TabBarProps) {
         // }}
         onPress={openModal}
       >
-        <FontAwesome name="plus" size={24} color="white" />
+        <FontAwesome name="plus" size={24} color={colors.background} />
       </TouchableOpacity>
       <Modal visible={visible} transparent animationType="none">
         <View style={styles.overlay}>
           <TouchableOpacity style={styles.background} onPress={closeModal} />
           <Animated.View
-            style={[styles.modalContent, { transform: [{ translateY }] }]}
+            style={[
+              styles.modalContent,
+              { transform: [{ translateY }] },
+              { backgroundColor: colors.card },
+            ]}
           >
             <Text style={styles.title}>Thêm lượng nước</Text>
             <View style={styles.waterOptions}>
@@ -94,7 +100,10 @@ export default function TabBar({}: TabBarProps) {
                 ? [1, 2, 3, 4].map((amount) => (
                     <TouchableOpacity
                       key={amount}
-                      style={styles.optionButton}
+                      style={[
+                        styles.optionButton,
+                        { backgroundColor: colors.optionModal },
+                      ]}
                       onPress={() => {
                         increaseLevel(amount);
                         closeModal();
@@ -146,7 +155,6 @@ const styles = StyleSheet.create({
     position: "absolute",
     bottom: 0,
     width: "100%",
-    backgroundColor: "#fff",
     padding: 10,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: -5 },
@@ -182,7 +190,6 @@ const styles = StyleSheet.create({
   },
 
   modalContent: {
-    backgroundColor: "#fff",
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
     padding: 20,
@@ -201,18 +208,17 @@ const styles = StyleSheet.create({
     color: "#1976D2",
   },
   waterOptions: {
-    flexDirection: "row", // Sắp xếp các mục theo hàng ngang.
-    flexWrap: "wrap", // Cho phép các mục tự xuống dòng nếu không đủ không gian.
-    justifyContent: "space-between", // Căn đều khoảng cách giữa các cột.
+    flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "space-between",
     marginTop: 10,
   },
 
   optionButton: {
-    backgroundColor: "#E3F2FD",
     paddingVertical: 15,
     borderRadius: 12,
-    marginBottom: 10, // Khoảng cách giữa các hàng.
-    width: "48%", // Đảm bảo mỗi nút chiếm gần 50% chiều rộng container.
+    marginBottom: 10,
+    width: "48%",
     alignItems: "center",
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },

@@ -13,8 +13,10 @@ import {
 import TabBar from "../components/TabBar";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { useUser } from "../contexts/UserContext";
+import { useTheme } from "../contexts/ThemeContext";
 
 export default function Profile() {
+  const { colors } = useTheme();
   const { user } = useUser();
   const [lastName, setLastName] = useState(user.lname);
   const [firstName, setFirstName] = useState(user.fname);
@@ -32,7 +34,13 @@ export default function Profile() {
       style={styles.container}
       behavior={Platform.OS === "ios" ? "padding" : "height"}
     >
-      <ScrollView contentContainerStyle={styles.scrollContainer}>
+      <ScrollView
+        contentContainerStyle={[
+          styles.scrollContainer,
+          ,
+          { backgroundColor: colors.background },
+        ]}
+      >
         <View style={styles.header}>
           <View style={styles.backBtnContainer}>
             {isEditing && (
@@ -44,7 +52,7 @@ export default function Profile() {
               </TouchableOpacity>
             )}
           </View>
-          <Text style={styles.title}>
+          <Text style={[styles.title, { color: colors.text }]}>
             {isEditing ? "Chỉnh sửa hồ sơ" : "Hồ sơ của tôi"}
           </Text>
         </View>
@@ -66,7 +74,7 @@ export default function Profile() {
         <View style={styles.inputContainer}>
           <Text style={styles.label}>Họ</Text>
           <TextInput
-            style={styles.input}
+            style={[styles.input, { color: colors.text }]}
             value={firstName}
             onChangeText={setFirstName}
             editable={isEditing}
@@ -74,7 +82,7 @@ export default function Profile() {
 
           <Text style={styles.label}>Tên</Text>
           <TextInput
-            style={styles.input}
+            style={[styles.input, { color: colors.text }]}
             value={lastName}
             onChangeText={setLastName}
             editable={isEditing}
@@ -82,7 +90,7 @@ export default function Profile() {
 
           <Text style={styles.label}>Địa chỉ email</Text>
           <TextInput
-            style={styles.input}
+            style={[styles.input, { color: colors.text }]}
             value={email}
             onChangeText={setEmail}
             keyboardType="email-address"
@@ -91,7 +99,7 @@ export default function Profile() {
 
           <Text style={styles.label}>Tuổi</Text>
           <TextInput
-            style={styles.input}
+            style={[styles.input, { color: colors.text }]}
             value={age}
             onChangeText={setAge}
             keyboardType="numeric"

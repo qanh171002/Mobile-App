@@ -2,19 +2,23 @@ import React from "react";
 import { View, Text, StyleSheet, Image } from "react-native";
 import Svg, { Rect, Line, Polygon } from "react-native-svg";
 import { useWaterTracker } from "../contexts/WaterTrackerContext";
+import { useTheme } from "../contexts/ThemeContext";
 
 interface WaterGlassProps {
   currentLevel: number;
 }
 
 const WaterGlass: React.FC<WaterGlassProps> = ({ currentLevel }) => {
+  const { colors } = useTheme();
   const { maxLevel } = useWaterTracker();
   const glassHeight = 160;
   const waterHeight = (currentLevel / maxLevel) * glassHeight;
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.levelText}>{currentLevel} Ly</Text>
+    <View style={[styles.container, { backgroundColor: colors.subBg }]}>
+      <Text style={[styles.levelText, { color: colors.text }]}>
+        {currentLevel} Ly
+      </Text>
       {/* <Svg width="70" height={glassHeight} viewBox="0 0 100 200">
         <Rect
           x="10"
@@ -40,7 +44,7 @@ const WaterGlass: React.FC<WaterGlassProps> = ({ currentLevel }) => {
         style={styles.icon}
       />
 
-      <View style={styles.ruler}>
+      <View style={[styles.ruler, { backgroundColor: colors.subBg }]}>
         {Array.from({ length: maxLevel }, (_, index) => {
           const isActive = currentLevel === maxLevel - index;
           return (

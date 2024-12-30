@@ -14,6 +14,7 @@ import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { useNavigation } from "@react-navigation/native";
 import { RootStackParamList } from "../navigation/AppNavigator";
 import { useWaterTracker } from "../contexts/WaterTrackerContext";
+import { useTheme } from "../contexts/ThemeContext";
 interface Template {
   id: string;
   name: string;
@@ -28,6 +29,7 @@ const SetGoal = () => {
   >([]);
   const { maxLevel, chooseLevel, selectedValue, setSelectedValue } =
     useWaterTracker();
+  const { colors } = useTheme();
 
   React.useEffect(() => {
     const updatedTemplates = templates.map((template) => {
@@ -79,7 +81,7 @@ const SetGoal = () => {
 
   const renderTemplate = ({ item }: { item: any }) => (
     <TouchableOpacity
-      style={styles.templateBox}
+      style={[styles.templateBox, { backgroundColor: colors.optionBox }]}
       onPress={() => handleChooseTemplate(item.value)}
     >
       <Image
@@ -89,18 +91,22 @@ const SetGoal = () => {
         style={styles.icon}
       />
       <Text style={styles.templateName}>{item.name}</Text>
-      <Text style={styles.templateValue}>{item.displayValue}</Text>
+      <Text style={[styles.templateValue, { color: colors.text }]}>
+        {item.displayValue}
+      </Text>
     </TouchableOpacity>
   );
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
       <View style={styles.header}>
         <TouchableOpacity onPress={handleBack} style={styles.backIcon}>
           <AntDesign name="arrowleft" size={24} color="#1976D2" />
         </TouchableOpacity>
         <View style={styles.headerTitleContainer}>
-          <Text style={styles.headerText}>Đặt Mục Tiêu</Text>
+          <Text style={[styles.headerText, { color: colors.text }]}>
+            Đặt Mục Tiêu
+          </Text>
         </View>
       </View>
 
@@ -122,13 +128,17 @@ const SetGoal = () => {
         onChange={(item) => setSelectedValue(item.value)}
         placeholder="Đơn vị: Số ly nước"
       />
-      <View style={styles.sectionContainer}>
-        <Text style={styles.sectionTitle}>Mục tiêu uống nước</Text>
+      <View
+        style={[styles.sectionContainer, { backgroundColor: colors.subBg }]}
+      >
+        <Text style={[styles.sectionTitle, { color: colors.text }]}>
+          Mục tiêu uống nước
+        </Text>
         <Text style={styles.sectionSubtitle}>
           Chúng tôi đã chuẩn bị nhiều mục tiêu cho bạn!
         </Text>
         <TextInput
-          style={styles.searchBox}
+          style={[styles.searchBox, { backgroundColor: colors.searchBox }]}
           placeholder="Tìm kiếm theo template"
         />
 
@@ -147,7 +157,6 @@ const SetGoal = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#E8F5FF",
   },
   header: {
     position: "relative",
@@ -233,7 +242,6 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   searchBox: {
-    backgroundColor: "#F4F8FB",
     borderRadius: 16,
     padding: 18,
     marginBottom: 15,
@@ -243,7 +251,6 @@ const styles = StyleSheet.create({
   },
   templateBox: {
     flex: 1,
-    backgroundColor: "#FFF",
     borderRadius: 10,
     padding: 15,
     alignItems: "center",

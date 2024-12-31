@@ -98,7 +98,7 @@ const SetGoal = () => {
   );
 
   return (
-    <View style={[styles.container, { backgroundColor: colors.background }]}>
+    <View style={[styles.container, { backgroundColor: colors.subBg }]}>
       <View style={styles.header}>
         <TouchableOpacity onPress={handleBack} style={styles.backIcon}>
           <AntDesign name="arrowleft" size={24} color="#1976D2" />
@@ -129,7 +129,10 @@ const SetGoal = () => {
         placeholder="Đơn vị: Số ly nước"
       />
       <View
-        style={[styles.sectionContainer, { backgroundColor: colors.subBg }]}
+        style={[
+          styles.sectionContainer,
+          { backgroundColor: colors.background },
+        ]}
       >
         <Text style={[styles.sectionTitle, { color: colors.text }]}>
           Mục tiêu uống nước
@@ -140,6 +143,7 @@ const SetGoal = () => {
         <TextInput
           style={[styles.searchBox, { backgroundColor: colors.searchBox }]}
           placeholder="Tìm kiếm theo template"
+          placeholderTextColor={colors.text}
         />
 
         <FlatList

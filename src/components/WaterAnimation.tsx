@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from "react";
-import { View, StyleSheet } from "react-native";
-import Svg, { Path } from "react-native-svg";
-import { Accelerometer } from "expo-sensors";
+import { Accelerometer } from 'expo-sensors';
+import React, { useEffect, useState } from 'react';
+import { StyleSheet, View } from 'react-native';
+import Svg, { Path } from 'react-native-svg';
 
 const WaterAnimation = () => {
     const [tilt, setTilt] = useState({ x: 0, y: 0 });
@@ -15,7 +15,11 @@ const WaterAnimation = () => {
         return () => subscription?.remove();
     }, []);
 
-    const generateWavePath = (offsetY: number, depth: number, multiplier: number = 1): string => {
+    const generateWavePath = (
+        offsetY: number,
+        depth: number,
+        multiplier: number = 1,
+    ): string => {
         const { x } = tilt;
         const translateX = x * 50 * multiplier;
         let d = `M0,${160 + offsetY}L`;
@@ -23,14 +27,23 @@ const WaterAnimation = () => {
         const points = 50; // Increase the number of points for smoother wave
         for (let i = 0; i <= points; i++) {
             const xVal = (1440 / points) * i;
-            const yVal = 160 + offsetY + (depth * Math.sin(((i / points) * Math.PI * 2) + translateX / 10));
+            const yVal =
+                160 +
+                offsetY +
+                depth * Math.sin((i / points) * Math.PI * 2 + translateX / 10);
             d += `${xVal},${yVal}C`;
             if (i < points) {
-                const controlX1 = xVal + ((1440 / points) / 3);
+                const controlX1 = xVal + 1440 / points / 3;
                 const controlY1 = yVal;
                 const nextX = (1440 / points) * (i + 1);
-                const nextY = 160 + offsetY + (depth * Math.sin((((i + 1) / points) * Math.PI * 2) + translateX / 10));
-                const controlX2 = nextX - ((1440 / points) / 3);
+                const nextY =
+                    160 +
+                    offsetY +
+                    depth *
+                        Math.sin(
+                            ((i + 1) / points) * Math.PI * 2 + translateX / 10,
+                        );
+                const controlX2 = nextX - 1440 / points / 3;
                 d += `${controlX1},${controlY1},${controlX2},${nextY},`;
             }
         }
@@ -41,21 +54,26 @@ const WaterAnimation = () => {
 
     return (
         <View style={styles.container}>
-            <Svg height="80%" width="100%" viewBox="0 0 1440 320" style={styles.wave}>
+            <Svg
+                height="80%"
+                width="100%"
+                viewBox="0 0 1440 320"
+                style={styles.wave}
+            >
                 <Path
-                    fill="#6DB1F4"
+                    fill="#0ea6e9"
                     fillOpacity="0.41"
-                    d={generateWavePath(-180, 30, 1.2)}
+                    d={generateWavePath(-180, -20, 1.2)}
                 />
                 <Path
-                    fill="#6DB1F4"
+                    fill="#0ea6e9"
                     fillOpacity="0.41"
-                    d={generateWavePath(-220, 20, 0.9)}
+                    d={generateWavePath(-220, -30, 0.9)}
                 />
                 <Path
-                    fill="#6DB1F4"
+                    fill="#0ea6e9"
                     fillOpacity="0.41"
-                    d={generateWavePath(-260, 15, 0.7)}
+                    d={generateWavePath(-260, -30, 0.7)}
                 />
             </Svg>
         </View>
@@ -65,12 +83,12 @@ const WaterAnimation = () => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        justifyContent: "center",
-        alignItems: "center",
+        justifyContent: 'center',
+        alignItems: 'center',
     },
     wave: {
-        position: "absolute",
-        bottom: "-20%",
+        position: 'absolute',
+        bottom: '-30%',
     },
 });
 

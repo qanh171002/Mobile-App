@@ -1,19 +1,16 @@
-import * as React from "react"
+import * as React from 'react';
 import Svg, {
+    Circle,
     Defs,
-    RadialGradient,
-    Stop,
     G,
     Path,
-    Circle
-} from "react-native-svg"
+    RadialGradient,
+    Stop,
+} from 'react-native-svg';
 
 function SvgComponent(props) {
     return (
-        <Svg
-            xmlns="http://www.w3.org/2000/svg"
-            {...props}
-        >
+        <Svg xmlns="http://www.w3.org/2000/svg" {...props}>
             <Defs>
                 <RadialGradient
                     id="a"
@@ -39,7 +36,11 @@ function SvgComponent(props) {
                     gradientUnits="userSpaceOnUse"
                 >
                     <Stop offset={0} stopColor="#fff" />
-                    <Stop offset={0.601} stopColor="#bddbf1" stopOpacity={0.28} />
+                    <Stop
+                        offset={0.601}
+                        stopColor="#bddbf1"
+                        stopOpacity={0.28}
+                    />
                     <Stop offset={1} stopColor="#5686f5" stopOpacity={0} />
                 </RadialGradient>
                 <RadialGradient
@@ -66,13 +67,17 @@ function SvgComponent(props) {
                     gradientUnits="userSpaceOnUse"
                 >
                     <Stop offset={0} stopColor="#fff" />
-                    <Stop offset={0.601} stopColor="#bddbf1" stopOpacity={0.28} />
+                    <Stop
+                        offset={0.601}
+                        stopColor="#bddbf1"
+                        stopOpacity={0.28}
+                    />
                     <Stop offset={1} stopColor="#5686f5" stopOpacity={0} />
                 </RadialGradient>
             </Defs>
             <G
                 style={{
-                    isolation: "isolate"
+                    isolation: 'isolate',
                 }}
             >
                 <Path
@@ -81,11 +86,16 @@ function SvgComponent(props) {
                 />
                 <G
                     style={{
-                        mixBlendMode: "screen"
+                        mixBlendMode: 'screen',
                     }}
                     opacity={0.3}
                 >
-                    <Circle cx={91.6946} cy={15.6666} r={15.6666} fill="url(#b)" />
+                    <Circle
+                        cx={91.6946}
+                        cy={15.6666}
+                        r={15.6666}
+                        fill="url(#b)"
+                    />
                 </G>
                 <Path
                     d="M83.138 87.467c0 22.957-18.611 41.568-41.57 41.568S0 110.424 0 87.467c0-22.038 16.088-36.049 38.704-59.014a4.042 4.042 0 015.74-.012C66.875 51.05 83.139 65.44 83.139 87.467z"
@@ -93,15 +103,20 @@ function SvgComponent(props) {
                 />
                 <G
                     style={{
-                        mixBlendMode: "screen"
+                        mixBlendMode: 'screen',
                     }}
                     opacity={0.3}
                 >
-                    <Circle cx={55.2886} cy={65.0195} r={39.4902} fill="url(#d)" />
+                    <Circle
+                        cx={55.2886}
+                        cy={65.0195}
+                        r={39.4902}
+                        fill="url(#d)"
+                    />
                 </G>
             </G>
         </Svg>
-    )
+    );
 }
 
-export default SvgComponent
+export default SvgComponent;

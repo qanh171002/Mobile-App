@@ -1,243 +1,288 @@
-import React, { useState } from "react";
+import DateTimePicker from '@react-native-community/datetimepicker';
+import React, { useState } from 'react';
 import {
-  Dimensions,
-  View,
-  Text,
-  StyleSheet,
-  Animated,
-  Platform,
-  TouchableOpacity,
-} from "react-native";
-import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import { useNavigation } from "@react-navigation/native";
-import { RootStackParamList } from "../navigation/AppNavigator";
-import TabBar from "../components/TabBar";
-import { useWaterTracker } from "../contexts/WaterTrackerContext";
-import WaterAnimation from "../components/WaterAnimation";
-import Arrow from "../../assets/images/arrow.jsx";
-import DateTimePicker from "@react-native-community/datetimepicker";
-import { PanGestureHandler, GestureHandlerRootView } from "react-native-gesture-handler";
+    Dimensions,
+    Platform,
+    StyleSheet,
+    Text,
+    TouchableOpacity,
+    View,
+} from 'react-native';
+import {
+    GestureHandlerRootView,
+    State as GestureState,
+    PanGestureHandler,
+} from 'react-native-gesture-handler';
+import Animated, {
+    runOnJS,
+    useAnimatedStyle,
+    useSharedValue,
+    withTiming,
+} from 'react-native-reanimated';
 
-const windowWidth = Dimensions.get("window").width;
+import { useTheme } from '../contexts/ThemeContext';
+import Arrow from '../../assets/images/arrow';
+import HistorySvg from '../../assets/images/history';
+import TabBar from '../components/TabBar';
+import WaterAnimation from '../components/WaterAnimation';
+import { useWaterTracker } from '../contexts/WaterTrackerContext';
+
+const windowWidth = Dimensions.get('window').width;
 
 const Home = () => {
-  const { currentLevel, maxLevel } = useWaterTracker();
-  const navigation =
-      useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+    const { colors } = useTheme(); // Using colors from the theme context
+    const { currentLevel, maxLevel } = useWaterTracker();
 
-  const [currentDate, setCurrentDate] = useState(new Date());
-  const [showDatePicker, setShowDatePicker] = useState(false); // Trạng thái để hiện Date Picker
-  const today = new Date();
-  const translateX = useState(new Animated.Value(0))[0];
-  const [isAnimating, setIsAnimating] = useState(false); // Trạng thái để khóa animation
+    const [currentDate, setCurrentDate] = useState<Date>(new Date());
+    const [showDatePicker, setShowDatePicker] = useState<boolean>(false);
+    const today = new Date();
 
-  const isToday = (date: Date) => {
+    const translateX = useSharedValue(0);
+    const isAnimating = useSharedValue(false);
+
+    const isYesterday = (date: Date): boolean => {
+        const yesterday = new Date(today);
+        yesterday.setDate(today.getDate() - 1);
+        return (
+            date.getDate() === yesterday.getDate() &&
+            date.getMonth() === yesterday.getMonth() &&
+            date.getFullYear() === yesterday.getFullYear()
+        );
+    };
+
+    const isToday = (date: Date): boolean => {
+        return (
+            date.getDate() === today.getDate() &&
+            date.getMonth() === today.getMonth() &&
+            date.getFullYear() === today.getFullYear()
+        );
+    };
+
+    const handleSwipeAnimation = (direction: number, newDate: Date) => {
+        if (isAnimating.value) return;
+        isAnimating.value = true;
+        runOnJS(setCurrentDate)(newDate);
+
+        translateX.value = withTiming(
+            direction * windowWidth,
+            { duration: 100 },
+            (finished) => {
+                if (finished) {
+                    translateX.value = -direction * windowWidth; // Reset here
+                    translateX.value = withTiming(0, { duration: 100 }, () => {
+                        isAnimating.value = false;
+                    });
+                } else {
+                    isAnimating.value = false;
+                }
+            },
+        );
+    };
+
+    const onSwipe = (event: any) => {
+        const { state, translationX } = event.nativeEvent;
+        const swipeThreshold = 50;
+        if (isAnimating.value) return;
+        if (state === GestureState.END) {
+            if (translationX > swipeThreshold) {
+                const prevDate = new Date(currentDate);
+                prevDate.setDate(currentDate.getDate() - 1);
+                handleSwipeAnimation(1, prevDate);
+            } else if (
+                translationX < -swipeThreshold &&
+                !isToday(currentDate)
+            ) {
+                const nextDate = new Date(currentDate);
+                nextDate.setDate(currentDate.getDate() + 1);
+                handleSwipeAnimation(-1, nextDate);
+            }
+        }
+    };
+
+    const openDatePicker = () => {
+        setShowDatePicker(true);
+    };
+
+    const handleDateChange = (_event: any, selectedDate?: Date) => {
+        setShowDatePicker(false);
+        if (selectedDate) {
+            const today = new Date();
+            if (selectedDate > today) {
+                setCurrentDate(today);
+            } else {
+                setCurrentDate(selectedDate);
+            }
+        }
+    };
+
+    const renderDateLabel = (): string => {
+        if (isToday(currentDate)) {
+            return 'Today';
+        } else if (isYesterday(currentDate)) {
+            return 'Yesterday';
+        } else {
+            return currentDate.toLocaleDateString();
+        }
+    };
+
+    const animatedStyle = useAnimatedStyle(() => ({
+        transform: [
+            {
+                translateX: translateX.value,
+            },
+        ],
+    }));
+
     return (
-        date.getDate() === today.getDate() &&
-        date.getMonth() === today.getMonth() &&
-        date.getFullYear() === today.getFullYear()
-    );
-  };
-
-  const onSwipeGesture = (event: any) => {
-    if (isAnimating) return; // Nếu đang xử lý animation, khóa vuốt
-
-    const swipeThreshold = 50; // Ngưỡng vuốt
-
-    if (event.nativeEvent.translationX < -swipeThreshold && !isToday(currentDate)) {
-      const nextDate = new Date(currentDate);
-      nextDate.setDate(currentDate.getDate() + 1);
-      handleSwipeAnimation(-1, nextDate);
-    } else if (event.nativeEvent.translationX > swipeThreshold) {
-      const prevDate = new Date(currentDate);
-      prevDate.setDate(currentDate.getDate() - 1);
-      handleSwipeAnimation(1, prevDate);
-    }
-  };
-
-  // Thực hiện animation
-  const handleSwipeAnimation = (direction: number, newDate: Date) => {
-    setIsAnimating(true); // Khóa animation
-    Animated.timing(translateX, {
-      toValue: direction * windowWidth, // Xác định điểm dịch chuyển
-      duration: 300, // Thời lượng animation
-      useNativeDriver: true,
-    }).start(() => {
-      setCurrentDate(newDate); // Cập nhật ngày khi vuốt xong
-      translateX.setValue(-direction * windowWidth); // Reset vị trí sau dịch chuyển
-      Animated.timing(translateX, {
-        toValue: 0, // Trả về trạng thái ban đầu
-        duration: 300,
-        useNativeDriver: true,
-      }).start(() => {
-        setIsAnimating(false); // Mở khóa animation sau khi hoàn thành hoàn toàn
-      });
-    });
-  };
-
-  // Hàm mở DatePicker
-  const openDatePicker = () => {
-    setShowDatePicker(true);
-  };
-
-  // Xử lý khi chọn ngày trong DatePicker
-  const handleDateChange = (event: any, selectedDate?: Date) => {
-    setShowDatePicker(false); // Đóng DatePicker khi người dùng chọn xong
-    if (selectedDate) {
-      setCurrentDate(selectedDate); // Cập nhật ngày được chọn
-    }
-  };
-
-  // Hiển thị ngày
-  const renderDateLabel = () => {
-    return isToday(currentDate)
-        ? "Today"
-        : currentDate.toLocaleDateString(); // Hiển thị ngày/tháng/năm khi không phải hôm nay
-  };
-
-  return (
-      <GestureHandlerRootView style={{ flex: 1 }}>
-        <PanGestureHandler onGestureEvent={onSwipeGesture}>
-          <View style={styles.container}>
-            {/* Header */}
-            <View style={styles.headerContainer}>
-              <TouchableOpacity onPress={openDatePicker} style={styles.calendar}>
-                <Text style={styles.date}>{renderDateLabel()}</Text>
-                <Arrow style={styles.arrow} width={16} height={16} />
-              </TouchableOpacity>
-            </View>
-
-            {/* Date Picker */}
-            {showDatePicker && (
-                <DateTimePicker
-                    value={currentDate}
-                    mode="date"
-                    display={Platform.OS === "ios" ? "inline" : "default"}
-                    onChange={handleDateChange}
-                />
-            )}
-
-            {/* Animated View */}
-            <Animated.View
-                style={[
-                  styles.mainTableWrapper,
-                  { transform: [{ translateX }] },
-                ]}
+        <GestureHandlerRootView style={{ flex: 1 }}>
+            <PanGestureHandler
+                onGestureEvent={onSwipe}
+                onHandlerStateChange={onSwipe}
             >
-              <WaterAnimation />
-              <View style={styles.centerContent}>
-                <Text style={styles.percentage}>
-                  {Math.floor((currentLevel / maxLevel) * 100)}%
-                </Text>
-              </View>
-            </Animated.View>
-
-            <View style={styles.infoContainer}>
-              {/* Cột bên trái: Labels */}
-              <View style={styles.column}>
-                <Text style={styles.labelText}>Target</Text>
-                <Text style={styles.labelText}>Drank</Text>
-                <Text style={styles.labelText}>Remaining</Text>
-                <Text style={styles.labelText}>Drinks count</Text>
-              </View>
-              {/* Cột bên phải: Values */}
-              <View style={styles.column}>
-                <Text style={styles.valueText}>0 ml</Text>
-                <Text style={styles.valueText}>0</Text>
-                <Text style={styles.valueText}>0</Text>
-                <Text style={styles.valueText}>0</Text>
-              </View>
-            </View>
-
-            {/* Tab Navigation */}
-            <TabBar />
-          </View>
-        </PanGestureHandler>
-      </GestureHandlerRootView>
-  );
+                <View style={[styles.container, { backgroundColor: colors.background }]}>
+                    <View style={styles.headerContainer}>
+                        <TouchableOpacity
+                            onPress={openDatePicker}
+                            style={styles.calendar}
+                        >
+                            <Text style={[styles.date, { color: colors.text }]}>
+                                {renderDateLabel()}
+                            </Text>
+                            <Arrow style={styles.arrow } fill={colors.text} />
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                            onPress={() => console.log('History clicked!')}
+                            style={styles.historyButton}
+                        >
+                            <HistorySvg fill={colors.text} />
+                        </TouchableOpacity>
+                    </View>
+                    {showDatePicker && (
+                        <DateTimePicker
+                            value={currentDate}
+                            mode="date"
+                            display={
+                                Platform.OS === 'ios' ? 'inline' : 'default'
+                            }
+                            onChange={handleDateChange}
+                        />
+                    )}
+                    <Animated.View
+                        style={[
+                            styles.mainTableWrapper,
+                            animatedStyle,
+                            { backgroundColor: colors.sub_background, borderColor: colors.primary },
+                        ]}
+                    >
+                        <WaterAnimation />
+                        <View style={styles.centerContent}>
+                            <Text style={[styles.percentage, { color: colors.primary }]}>
+                                {Math.floor((currentLevel / maxLevel) * 100)}%
+                            </Text>
+                        </View>
+                    </Animated.View>
+                    <View style={styles.infoContainer}>
+                        <View style={styles.column}>
+                            <Text style={[styles.labelText, { color: colors.text }]}>Target</Text>
+                            <Text style={[styles.labelText, { color: colors.text }]}>Drank</Text>
+                            <Text style={[styles.labelText, { color: colors.text }]}>Remaining</Text>
+                            <Text style={[styles.labelText, { color: colors.text }]}>Drinks count</Text>
+                        </View>
+                        <View style={styles.column}>
+                            <Text style={[styles.valueText, { color: colors.primary }]}>0 ml</Text>
+                            <Text style={[styles.valueText, { color: colors.primary }]}>0</Text>
+                            <Text style={[styles.valueText, { color: colors.primary }]}>0</Text>
+                            <Text style={[styles.valueText, { color: colors.primary }]}>0</Text>
+                        </View>
+                    </View>
+                    <TabBar />
+                </View>
+            </PanGestureHandler>
+        </GestureHandlerRootView>
+    );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: "flex-start",
-    alignItems: "center",
-    backgroundColor: "#F4F8FB",
-    paddingTop: 40,
-    flexDirection: "column",
-  },
-  headerContainer: {
-    flexDirection: "row",
-    width: "100%",
-    alignItems: "center",
-    justifyContent: "center",
-    paddingTop: 36,
-  },
-  calendar: {
-    flexDirection: "row",
-  },
-  arrow: {
-    transform: [{ translateY: 12 }],
-  },
-  date: {
-    fontFamily: "Cera_Black",
-    fontSize: 26,
-    color: "#121212",
-    marginRight: 10,
-    marginBottom: 10,
-  },
-  mainTableWrapper: {
-    width: windowWidth * 0.9,
-    height: windowWidth * 0.9,
-    marginTop: 24,
-    backgroundColor: "#fff",
-    overflow: "hidden",
-    borderRadius: windowWidth * 0.45,
-    borderWidth: 10,
-    borderColor: "#bedcf8",
-  },
-  centerContent: {
-    position: "absolute",
-    top: "50%",
-    left: "50%",
-    width: windowWidth * 0.45,
-    height: windowWidth * 0.45,
-    transform: [
-      { translateX: -windowWidth * 0.225 },
-      { translateY: -windowWidth * 0.225 },
-    ],
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  percentage: {
-    fontFamily: "Cera_Black",
-    fontSize: 40,
-    color: "#bedcf8",
-  },
-  infoContainer: {
-    flexDirection: "row",
-    justifyContent: "center",
-    alignItems: "center",
-    marginTop: "8%",
-    width: "50%",
-  },
-  column: {
-    justifyContent: "space-around",
-    padding: 10,
-  },
-  labelText: {
-    fontFamily: "Cera_Bold",
-    fontSize: 16,
-    color: "#121212", // Màu xám cho nhãn
-    marginBottom: 8,
-  },
-  valueText: {
-    fontFamily: "Cera_Black",
-    fontSize: 16,
-    color: "#0ea6e9", // Màu đen cho giá trị
-    marginBottom: 8,
-    textAlign: "right",
-  },
+    container: {
+        flex: 1,
+        justifyContent: 'flex-start',
+        alignItems: 'center',
+        paddingTop: 20,
+    },
+    headerContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        margin: '5%',
+        width: '100%',
+        position: 'relative',
+    },
+    calendar: {
+        flexDirection: 'row',
+        alignItems: 'center',
+    },
+    date: {
+        fontFamily: 'Cera_Black',
+        fontSize: 26,
+        marginRight: 10,
+    },
+    arrow: {
+        transform: [{ translateY: 2 }],
+        height: 16,
+        width: 16,
+    },
+    historyButton: {
+        position: 'absolute',
+        height: 33,
+        width: 33,
+        right: '5%',
+    },
+    mainTableWrapper: {
+        width: windowWidth * 0.9,
+        height: windowWidth * 0.9,
+        marginTop: 30,
+        borderRadius: windowWidth * 0.45,
+        overflow: 'hidden',
+    },
+    centerContent: {
+        position: 'absolute',
+        top: '50%',
+        left: '50%',
+        width: windowWidth * 0.45,
+        height: windowWidth * 0.45,
+        transform: [
+            { translateX: -windowWidth * 0.225 },
+            { translateY: -windowWidth * 0.225 },
+        ],
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    percentage: {
+        fontFamily: 'Cera_Black',
+        fontSize: 40,
+    },
+    infoContainer: {
+        flexDirection: 'row',
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginTop: '8%',
+        width: '50%',
+    },
+    column: {
+        justifyContent: 'space-around',
+        padding: 10,
+    },
+    labelText: {
+        fontFamily: 'Cera_Bold',
+        fontSize: 16,
+        marginBottom: 8,
+    },
+    valueText: {
+        fontFamily: 'Cera_Black',
+        fontSize: 16,
+        marginBottom: 8,
+        textAlign: 'right',
+    },
 });
 
 export default Home;

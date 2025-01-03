@@ -1,8 +1,6 @@
-import DateTimePicker from '@react-native-community/datetimepicker';
 import React, { useState } from 'react';
 import {
     Dimensions,
-    Platform,
     StyleSheet,
     Text,
     TouchableOpacity,
@@ -13,6 +11,7 @@ import {
     State as GestureState,
     PanGestureHandler,
 } from 'react-native-gesture-handler';
+import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import Animated, {
     runOnJS,
     useAnimatedStyle,
@@ -20,11 +19,11 @@ import Animated, {
     withTiming,
 } from 'react-native-reanimated';
 
-import { useTheme } from '../contexts/ThemeContext';
 import Arrow from '../../assets/images/arrow';
 import HistorySvg from '../../assets/images/history';
 import TabBar from '../components/TabBar';
 import WaterAnimation from '../components/WaterAnimation';
+import { useTheme } from '../contexts/ThemeContext';
 import { useWaterTracker } from '../contexts/WaterTrackerContext';
 
 const windowWidth = Dimensions.get('window').width;
@@ -139,7 +138,12 @@ const Home = () => {
                 onGestureEvent={onSwipe}
                 onHandlerStateChange={onSwipe}
             >
-                <View style={[styles.container, { backgroundColor: colors.background }]}>
+                <View
+                    style={[
+                        styles.container,
+                        { backgroundColor: colors.background },
+                    ]}
+                >
                     <View style={styles.headerContainer}>
                         <TouchableOpacity
                             onPress={openDatePicker}
@@ -148,7 +152,7 @@ const Home = () => {
                             <Text style={[styles.date, { color: colors.text }]}>
                                 {renderDateLabel()}
                             </Text>
-                            <Arrow style={styles.arrow } fill={colors.text} />
+                            <Arrow style={styles.arrow} fill={colors.text} />
                         </TouchableOpacity>
                         <TouchableOpacity
                             onPress={() => console.log('History clicked!')}
@@ -158,41 +162,108 @@ const Home = () => {
                         </TouchableOpacity>
                     </View>
                     {showDatePicker && (
-                        <DateTimePicker
-                            value={currentDate}
+                        <DateTimePickerModal
+                            isVisible={true}
                             mode="date"
-                            display={
-                                Platform.OS === 'ios' ? 'inline' : 'default'
-                            }
-                            onChange={handleDateChange}
+                            date={currentDate}
+                            onConfirm={(selectedDate) => {
+                                handleDateChange(null, selectedDate); // Pass selectedDate to your handler
+                            }}
+                            onCancel={() => {
+                                setShowDatePicker(false); // Close the modal
+                            }}
                         />
                     )}
                     <Animated.View
                         style={[
                             styles.mainTableWrapper,
                             animatedStyle,
-                            { backgroundColor: colors.sub_background, borderColor: colors.primary },
+                            {
+                                backgroundColor: colors.sub_background,
+                                borderColor: colors.primary,
+                            },
                         ]}
                     >
                         <WaterAnimation />
                         <View style={styles.centerContent}>
-                            <Text style={[styles.percentage, { color: colors.primary }]}>
+                            <Text
+                                style={[
+                                    styles.percentage,
+                                    { color: colors.primary },
+                                ]}
+                            >
                                 {Math.floor((currentLevel / maxLevel) * 100)}%
                             </Text>
                         </View>
                     </Animated.View>
                     <View style={styles.infoContainer}>
                         <View style={styles.column}>
-                            <Text style={[styles.labelText, { color: colors.text }]}>Target</Text>
-                            <Text style={[styles.labelText, { color: colors.text }]}>Drank</Text>
-                            <Text style={[styles.labelText, { color: colors.text }]}>Remaining</Text>
-                            <Text style={[styles.labelText, { color: colors.text }]}>Drinks count</Text>
+                            <Text
+                                style={[
+                                    styles.labelText,
+                                    { color: colors.text },
+                                ]}
+                            >
+                                Target
+                            </Text>
+                            <Text
+                                style={[
+                                    styles.labelText,
+                                    { color: colors.text },
+                                ]}
+                            >
+                                Drank
+                            </Text>
+                            <Text
+                                style={[
+                                    styles.labelText,
+                                    { color: colors.text },
+                                ]}
+                            >
+                                Remaining
+                            </Text>
+                            <Text
+                                style={[
+                                    styles.labelText,
+                                    { color: colors.text },
+                                ]}
+                            >
+                                Drinks count
+                            </Text>
                         </View>
                         <View style={styles.column}>
-                            <Text style={[styles.valueText, { color: colors.primary }]}>0 ml</Text>
-                            <Text style={[styles.valueText, { color: colors.primary }]}>0</Text>
-                            <Text style={[styles.valueText, { color: colors.primary }]}>0</Text>
-                            <Text style={[styles.valueText, { color: colors.primary }]}>0</Text>
+                            <Text
+                                style={[
+                                    styles.valueText,
+                                    { color: colors.primary },
+                                ]}
+                            >
+                                0 ml
+                            </Text>
+                            <Text
+                                style={[
+                                    styles.valueText,
+                                    { color: colors.primary },
+                                ]}
+                            >
+                                0
+                            </Text>
+                            <Text
+                                style={[
+                                    styles.valueText,
+                                    { color: colors.primary },
+                                ]}
+                            >
+                                0
+                            </Text>
+                            <Text
+                                style={[
+                                    styles.valueText,
+                                    { color: colors.primary },
+                                ]}
+                            >
+                                0
+                            </Text>
                         </View>
                     </View>
                     <TabBar />

@@ -2,7 +2,6 @@ import React from 'react';
 import { Dimensions, StyleSheet, View } from 'react-native';
 import Svg, { Circle } from 'react-native-svg';
 
-
 type CircleWithGapProps = {
     radius?: number;
     strokeWidth?: number;
@@ -10,23 +9,25 @@ type CircleWithGapProps = {
     gapAngle?: number;
 };
 
-
 const windowWidth = Dimensions.get('window').width;
 
 const CircleWithGap: React.FC<CircleWithGapProps> = ({
-                                                         radius = windowWidth * 0.43,
-                                                         strokeWidth = 18,
-                                                         color = '#4caf50',
-                                                         gapAngle = 20,
-                                                     }) => {
+    radius = windowWidth * 0.43,
+    strokeWidth = 18,
+    color = '#4caf50',
+    gapAngle = 20,
+}) => {
     const circumference = 2 * Math.PI * radius;
     const gapLength = circumference * (gapAngle / 360);
-    const offset = (circumference / 2) - (gapLength / 2);
+    const offset = circumference / 2 - gapLength / 2;
     const rotationOffset = (circumference / 4) * 3;
 
     return (
         <View style={styles.container}>
-            <Svg height={radius * 2 + strokeWidth * 2} width={radius * 2 + strokeWidth * 2}>
+            <Svg
+                height={radius * 2 + strokeWidth * 2}
+                width={radius * 2 + strokeWidth * 2}
+            >
                 <Circle
                     cx={radius + strokeWidth}
                     cy={radius + strokeWidth}

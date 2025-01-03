@@ -89,7 +89,7 @@ const backgroundColors = [
 const screenHeight = Dimensions.get('window').height;
 const tabBarHeight = 60;
 
-export default function Article() {
+export default function Schedule() {
     const navigation = useNavigation<NavigationProp>();
 
     // Access current theme and colors from the custom ThemeContext

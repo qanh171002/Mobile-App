@@ -1,4 +1,10 @@
-import React, { createContext, useState, useContext, ReactNode, useMemo } from "react";
+import React, {
+    ReactNode,
+    createContext,
+    useContext,
+    useMemo,
+    useState,
+} from 'react';
 
 // Define the shape of the theme, including the toggle function and colors
 interface ThemeColors {
@@ -10,7 +16,7 @@ interface ThemeColors {
     card: string;
     primary: string;
     item: string;
-    status: "light-content" | "dark-content";
+    status: 'light-content' | 'dark-content';
 }
 
 interface ThemeContextType {
@@ -34,34 +40,37 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
     };
 
     // Use `useMemo` to memoize the theme object, recalculating it only if `isDarkTheme` changes
-    const theme: ThemeContextType = useMemo(() => ({
-        isDarkTheme,
-        toggleTheme,
-        colors: isDarkTheme
-            ? {
-                background: "#001c31",
-                sub_background: "#002949",
-                nav_background: "#002949",
-                nav_text: "#a2d5ff",
-                text: "#a2d5ff",
-                card: "#001c31",
-                primary: "#0ea6e9",
-                optionBox: "#37474F",
-                item: "#37474F",
-                status: "light-content"
-            }
-            : {
-                background: "#fafafa",
-                sub_background: "#d0eaff",
-                nav_background: "#fff",
-                nav_text: "#bcbcbc",
-                text: "#121212",
-                card: "#fafafa",
-                primary: "#0ea6e9",
-                item: "#F4F8FB",
-                status: "dark-content"
-            },
-    }), [isDarkTheme]);
+    const theme: ThemeContextType = useMemo(
+        () => ({
+            isDarkTheme,
+            toggleTheme,
+            colors: isDarkTheme
+                ? {
+                      background: '#001c31',
+                      sub_background: '#002949',
+                      nav_background: '#002949',
+                      nav_text: '#a2d5ff',
+                      text: '#a2d5ff',
+                      card: '#001c31',
+                      primary: '#0ea6e9',
+                      optionBox: '#37474F',
+                      item: '#37474F',
+                      status: 'light-content',
+                  }
+                : {
+                      background: '#fafafa',
+                      sub_background: '#d0eaff',
+                      nav_background: '#fff',
+                      nav_text: '#bcbcbc',
+                      text: '#121212',
+                      card: '#fafafa',
+                      primary: '#0ea6e9',
+                      item: '#F4F8FB',
+                      status: 'dark-content',
+                  },
+        }),
+        [isDarkTheme],
+    );
 
     return (
         <ThemeContext.Provider value={theme}>{children}</ThemeContext.Provider>
@@ -71,7 +80,7 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
 export const useTheme = (): ThemeContextType => {
     const context = useContext(ThemeContext);
     if (!context) {
-        throw new Error("useTheme must be used within a ThemeProvider");
+        throw new Error('useTheme must be used within a ThemeProvider');
     }
     return context;
 };

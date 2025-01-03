@@ -1,19 +1,20 @@
-import React, { useState } from "react";
+import MaterialIcons from '@expo/vector-icons/MaterialIcons';
+import React, { useState } from 'react';
 import {
-    View,
-    Text,
-    TouchableOpacity,
-    StyleSheet,
     Image,
-    TextInput,
     KeyboardAvoidingView,
     Platform,
     ScrollView,
-} from "react-native";
-import TabBar from "../components/TabBar";
-import MaterialIcons from "@expo/vector-icons/MaterialIcons";
-import { useUser } from "../contexts/UserContext";
-import { useTheme } from "../contexts/ThemeContext";
+    StyleSheet,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    View,
+} from 'react-native';
+
+import TabBar from '../components/TabBar';
+import { useTheme } from '../contexts/ThemeContext';
+import { useUser } from '../contexts/UserContext';
 
 export default function Profile() {
     const { colors } = useTheme();
@@ -32,7 +33,7 @@ export default function Profile() {
     return (
         <KeyboardAvoidingView
             style={styles.container}
-            behavior={Platform.OS === "ios" ? "padding" : "height"}
+            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         >
             <ScrollView
                 contentContainerStyle={[
@@ -48,26 +49,32 @@ export default function Profile() {
                                 style={styles.backBtn}
                                 onPress={() => setIsEditing(false)}
                             >
-                                <MaterialIcons name="arrow-back" size={24} color="#1976D2" />
+                                <MaterialIcons
+                                    name="arrow-back"
+                                    size={24}
+                                    color="#1976D2"
+                                />
                             </TouchableOpacity>
                         )}
                     </View>
                     <Text style={[styles.title, { color: colors.text }]}>
-                        {isEditing ? "Chỉnh sửa hồ sơ" : "Hồ sơ của tôi"}
+                        {isEditing ? 'Chỉnh sửa hồ sơ' : 'Hồ sơ của tôi'}
                     </Text>
                 </View>
 
                 <TouchableOpacity
                     style={styles.editBtn}
                     onPress={
-                        isEditing === true ? () => {} : () => setIsEditing(!isEditing)
+                        isEditing === true
+                            ? () => {}
+                            : () => setIsEditing(!isEditing)
                     }
                 >
                     <MaterialIcons name="edit" size={18} color="white" />
                 </TouchableOpacity>
 
                 <Image
-                    source={require("../../assets/avatar.png")}
+                    source={require('../../assets/avatar.png')}
                     style={styles.profileImage}
                 />
 
@@ -111,15 +118,16 @@ export default function Profile() {
                         <TouchableOpacity
                             style={[
                                 styles.genderOption,
-                                gender === "male" && styles.selectedGender,
+                                gender === 'male' && styles.selectedGender,
                             ]}
-                            onPress={() => setGender("male")}
+                            onPress={() => setGender('male')}
                             disabled={!isEditing}
                         >
                             <Text
                                 style={[
                                     styles.genderText,
-                                    gender === "male" && styles.selectedGenderText,
+                                    gender === 'male' &&
+                                        styles.selectedGenderText,
                                 ]}
                             >
                                 Nam
@@ -128,15 +136,16 @@ export default function Profile() {
                         <TouchableOpacity
                             style={[
                                 styles.genderOption,
-                                gender === "female" && styles.selectedGender,
+                                gender === 'female' && styles.selectedGender,
                             ]}
-                            onPress={() => setGender("female")}
+                            onPress={() => setGender('female')}
                             disabled={!isEditing}
                         >
                             <Text
                                 style={[
                                     styles.genderText,
-                                    gender === "female" && styles.selectedGenderText,
+                                    gender === 'female' &&
+                                        styles.selectedGenderText,
                                 ]}
                             >
                                 Nữ
@@ -145,15 +154,16 @@ export default function Profile() {
                         <TouchableOpacity
                             style={[
                                 styles.genderOption,
-                                gender === "other" && styles.selectedGender,
+                                gender === 'other' && styles.selectedGender,
                             ]}
-                            onPress={() => setGender("other")}
+                            onPress={() => setGender('other')}
                             disabled={!isEditing}
                         >
                             <Text
                                 style={[
                                     styles.genderText,
-                                    gender === "other" && styles.selectedGenderText,
+                                    gender === 'other' &&
+                                        styles.selectedGenderText,
                                 ]}
                             >
                                 Khác
@@ -162,7 +172,10 @@ export default function Profile() {
                     </View>
 
                     {isEditing && (
-                        <TouchableOpacity style={styles.saveBtn} onPress={handleSave}>
+                        <TouchableOpacity
+                            style={styles.saveBtn}
+                            onPress={handleSave}
+                        >
                             <Text style={styles.saveBtnText}>Cập nhật</Text>
                         </TouchableOpacity>
                     )}
@@ -176,22 +189,22 @@ export default function Profile() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: "#FFF",
+        backgroundColor: '#FFF',
     },
     scrollContainer: {
         flexGrow: 1,
-        justifyContent: "flex-start",
-        alignItems: "center",
+        justifyContent: 'flex-start',
+        alignItems: 'center',
         paddingTop: 40,
     },
     header: {
-        flexDirection: "row",
-        alignItems: "center",
-        justifyContent: "center",
-        width: "100%",
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        width: '100%',
     },
     backBtnContainer: {
-        position: "absolute",
+        position: 'absolute',
         left: 28,
         top: 10,
     },
@@ -202,14 +215,14 @@ const styles = StyleSheet.create({
     },
     title: {
         fontSize: 24,
-        fontWeight: "600",
+        fontWeight: '600',
         marginTop: 18,
     },
     editBtn: {
         borderRadius: 50,
-        backgroundColor: "#1976D2",
+        backgroundColor: '#1976D2',
         padding: 6,
-        position: "absolute",
+        position: 'absolute',
         top: 58,
         right: 30,
     },
@@ -217,64 +230,64 @@ const styles = StyleSheet.create({
         width: 100,
         height: 100,
         borderRadius: 50,
-        backgroundColor: "#1976D2",
+        backgroundColor: '#1976D2',
         marginVertical: 8,
     },
     inputContainer: {
-        width: "80%",
+        width: '80%',
         marginTop: 20,
     },
     label: {
         fontSize: 16,
-        fontWeight: "500",
-        color: "#90A5B4",
+        fontWeight: '500',
+        color: '#90A5B4',
         marginBottom: 8,
     },
     input: {
-        width: "100%",
+        width: '100%',
         height: 46,
         paddingHorizontal: 10,
-        backgroundColor: "rgba(25, 118, 210, 0.1)",
+        backgroundColor: 'rgba(25, 118, 210, 0.1)',
         borderRadius: 8,
         marginBottom: 16,
     },
     genderContainer: {
-        flexDirection: "row",
-        justifyContent: "space-between",
-        width: "100%",
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        width: '100%',
     },
     genderOption: {
         paddingVertical: 12,
         paddingHorizontal: 20,
         borderRadius: 8,
         borderWidth: 1,
-        borderColor: "#ddd",
-        width: "30%",
-        alignItems: "center",
+        borderColor: '#ddd',
+        width: '30%',
+        alignItems: 'center',
     },
     selectedGender: {
-        backgroundColor: "#1976D2",
-        borderColor: "#1976D2",
-        color: "#fff",
+        backgroundColor: '#1976D2',
+        borderColor: '#1976D2',
+        color: '#fff',
     },
     genderText: {
-        color: "#333",
+        color: '#333',
         fontSize: 16,
     },
     selectedGenderText: {
-        color: "#FFF",
+        color: '#FFF',
     },
     saveBtn: {
-        backgroundColor: "#1976D2",
+        backgroundColor: '#1976D2',
         paddingVertical: 12,
         borderRadius: 8,
         marginTop: 20,
-        alignItems: "center",
-        justifyContent: "center",
+        alignItems: 'center',
+        justifyContent: 'center',
     },
     saveBtnText: {
-        color: "#FFF",
+        color: '#FFF',
         fontSize: 16,
-        fontWeight: "500",
+        fontWeight: '500',
     },
 });

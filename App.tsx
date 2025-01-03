@@ -2,10 +2,10 @@ import { useFonts } from 'expo-font';
 import React, { useEffect } from 'react';
 import { StatusBar } from 'react-native';
 
+import { ThemeProvider, useTheme } from './src/contexts/ThemeContext';
 import { UserProvider } from './src/contexts/UserContext';
 import { WaterTrackerProvider } from './src/contexts/WaterTrackerContext';
 import AppNavigator from './src/navigation/AppNavigator';
-import { ThemeProvider, useTheme } from "./src/contexts/ThemeContext";
 
 const MainApp = () => {
     const { colors } = useTheme();
@@ -14,8 +14,8 @@ const MainApp = () => {
         <WaterTrackerProvider>
             <UserProvider>
                 <StatusBar
-                    backgroundColor = {colors.background}
-                    barStyle = {colors.status}
+                    backgroundColor={colors.background}
+                    barStyle={colors.status}
                 />
                 <AppNavigator />
             </UserProvider>

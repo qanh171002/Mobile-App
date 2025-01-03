@@ -1,20 +1,21 @@
-import React, { useEffect, useState } from "react";
+import { AntDesign } from '@expo/vector-icons';
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import React, { useEffect, useState } from 'react';
 import {
-    View,
-    Text,
-    StyleSheet,
-    TouchableOpacity,
     Button,
     Image,
-} from "react-native";
-import Svg, { Circle } from "react-native-svg";
-import { AntDesign } from "@expo/vector-icons";
-import { useNavigation } from "@react-navigation/native";
-import { RootStackParamList } from "../navigation/AppNavigator";
-import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import WaterGlass from "../components/WaterGlass";
-import { useWaterTracker } from "../contexts/WaterTrackerContext";
-import { useTheme } from "../contexts/ThemeContext";
+    StyleSheet,
+    Text,
+    TouchableOpacity,
+    View,
+} from 'react-native';
+import Svg, { Circle } from 'react-native-svg';
+
+import WaterGlass from '../components/WaterGlass';
+import { useTheme } from '../contexts/ThemeContext';
+import { useWaterTracker } from '../contexts/WaterTrackerContext';
+import { RootStackParamList } from '../navigation/AppNavigator';
 
 const currentDate = new Date();
 const dateValue = `${currentDate.getDate()} tháng ${
@@ -36,11 +37,16 @@ const WaterTracker = () => {
         useNavigation<NativeStackNavigationProp<RootStackParamList>>();
 
     const handleBack = () => {
-        navigation.navigate("Home");
+        navigation.navigate('Home');
     };
 
     return (
-        <View style={[styles.container, { backgroundColor: colors.sub_background }]}>
+        <View
+            style={[
+                styles.container,
+                { backgroundColor: colors.sub_background },
+            ]}
+        >
             <View style={styles.header}>
                 <TouchableOpacity onPress={handleBack} style={styles.backIcon}>
                     <AntDesign name="arrowleft" size={24} color="#1976D2" />
@@ -51,11 +57,21 @@ const WaterTracker = () => {
                     </Text>
                 </View>
             </View>
-            <View style={[styles.glassContainer, { backgroundColor: colors.sub_background }]}>
+            <View
+                style={[
+                    styles.glassContainer,
+                    { backgroundColor: colors.sub_background },
+                ]}
+            >
                 <WaterGlass currentLevel={currentLevel} />
             </View>
 
-            <View style={[styles.sectionContainer, { backgroundColor: colors.card }]}>
+            <View
+                style={[
+                    styles.sectionContainer,
+                    { backgroundColor: colors.card },
+                ]}
+            >
                 <View style={styles.dateContainer}>
                     <Text style={styles.dateText}>Ngày & Giờ</Text>
                     <Text style={styles.dateValue}>{dateValue}</Text>
@@ -79,14 +95,21 @@ const WaterTracker = () => {
                                 cx="50"
                                 cy="50"
                                 r="45"
-                                stroke={targetReached ? "#00C853" : "#0288D1"}
+                                stroke={targetReached ? '#00C853' : '#0288D1'}
                                 strokeWidth="10"
                                 fill="none"
                                 strokeDasharray="282.6"
-                                strokeDashoffset={282.6 * ((100 - progress) / 100)}
+                                strokeDashoffset={
+                                    282.6 * ((100 - progress) / 100)
+                                }
                             />
                         </Svg>
-                        <Text style={[styles.progressText, { color: colors.text }]}>
+                        <Text
+                            style={[
+                                styles.progressText,
+                                { color: colors.text },
+                            ]}
+                        >
                             {progress}%
                         </Text>
                     </View>
@@ -96,15 +119,21 @@ const WaterTracker = () => {
                             <Text
                                 style={[
                                     styles.performanceValue,
-                                    targetReached ? styles.positive : styles.negative,
+                                    targetReached
+                                        ? styles.positive
+                                        : styles.negative,
                                 ]}
                             >
-                                {targetReached ? "+100%" : `-${100 - progress}%`}
+                                {targetReached
+                                    ? '+100%'
+                                    : `-${100 - progress}%`}
                             </Text>
-                            <Text style={styles.performanceLabel}>Hiệu suất Vận Động</Text>
+                            <Text style={styles.performanceLabel}>
+                                Hiệu suất Vận Động
+                            </Text>
                             <Image
                                 source={{
-                                    uri: "https://cdn-icons-png.flaticon.com/512/8815/8815678.png",
+                                    uri: 'https://cdn-icons-png.flaticon.com/512/8815/8815678.png',
                                 }}
                                 style={styles.icon}
                             />
@@ -113,16 +142,22 @@ const WaterTracker = () => {
                             <Text
                                 style={[
                                     styles.performanceValue,
-                                    targetReached ? styles.positive : styles.negative,
+                                    targetReached
+                                        ? styles.positive
+                                        : styles.negative,
                                 ]}
                             >
-                                {targetReached ? "+100%" : `-${100 - progress}%`}
+                                {targetReached
+                                    ? '+100%'
+                                    : `-${100 - progress}%`}
                             </Text>
-                            <Text style={styles.performanceLabel}>Hiệu suất Nhận Thức</Text>
+                            <Text style={styles.performanceLabel}>
+                                Hiệu suất Nhận Thức
+                            </Text>
 
                             <Image
                                 source={{
-                                    uri: "https://cdn-icons-png.flaticon.com/512/6969/6969728.png",
+                                    uri: 'https://cdn-icons-png.flaticon.com/512/6969/6969728.png',
                                 }}
                                 style={styles.icon}
                             />
@@ -137,7 +172,7 @@ const WaterTracker = () => {
                     ]}
                 >
                     <Text style={styles.buttonText}>
-                        {targetReached ? "Đạt Mục Tiêu" : "Chưa Đạt Mục Tiêu"}
+                        {targetReached ? 'Đạt Mục Tiêu' : 'Chưa Đạt Mục Tiêu'}
                     </Text>
                 </TouchableOpacity>
             </View>
@@ -148,147 +183,147 @@ const WaterTracker = () => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: "#EAF8FE",
+        backgroundColor: '#EAF8FE',
     },
     header: {
-        position: "relative",
-        flexDirection: "row",
-        alignItems: "center",
-        justifyContent: "center",
+        position: 'relative',
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
         marginBottom: 36,
         marginTop: 56,
         marginLeft: 16,
         gap: 10,
     },
     backIcon: {
-        position: "absolute",
-        top: "5%",
-        left: "2%",
+        position: 'absolute',
+        top: '5%',
+        left: '2%',
     },
     headerTitleContainer: {
         flex: 1,
-        alignItems: "center",
-        justifyContent: "center",
+        alignItems: 'center',
+        justifyContent: 'center',
     },
     headerText: {
         fontSize: 21,
-        fontWeight: "600",
+        fontWeight: '600',
     },
     glassContainer: {
-        justifyContent: "center",
-        alignItems: "center",
-        backgroundColor: "#EAF8FE",
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: '#EAF8FE',
     },
     glassText: {
         fontSize: 18,
-        fontWeight: "600",
+        fontWeight: '600',
         marginBottom: 8,
     },
     glass: {
         width: 100,
         height: 150,
-        backgroundColor: "rgba(25, 118, 210, 0.8)",
+        backgroundColor: 'rgba(25, 118, 210, 0.8)',
         borderRadius: 10,
     },
     sectionContainer: {
-        backgroundColor: "#fff",
+        backgroundColor: '#fff',
         flex: 1,
         borderTopLeftRadius: 28,
         borderTopRightRadius: 28,
         shadowOffset: { width: 0, height: 4 },
         shadowOpacity: 0.16,
         shadowRadius: 45,
-        shadowColor: "#1BA9E1",
+        shadowColor: '#1BA9E1',
         elevation: 5,
     },
     dateContainer: {
-        backgroundColor: "rgba(25, 118, 210, 0.8)",
+        backgroundColor: 'rgba(25, 118, 210, 0.8)',
         padding: 16,
         borderTopLeftRadius: 28,
         borderTopRightRadius: 28,
-        alignItems: "center",
+        alignItems: 'center',
         marginBottom: 20,
-        width: "100%",
+        width: '100%',
     },
     dateText: {
         fontSize: 18,
-        fontWeight: "600",
-        color: "#fff",
+        fontWeight: '600',
+        color: '#fff',
         marginVertical: 8,
     },
     dateValue: {
         fontSize: 14,
-        color: "#fff",
+        color: '#fff',
         marginBottom: 4,
     },
     goalContainer: {
-        alignItems: "center",
+        alignItems: 'center',
     },
     goalTitle: {
         fontSize: 16,
-        fontWeight: "600",
+        fontWeight: '600',
         marginBottom: 16,
     },
     progressCircle: {
-        alignItems: "center",
-        justifyContent: "center",
+        alignItems: 'center',
+        justifyContent: 'center',
         marginBottom: 20,
     },
     progressText: {
-        position: "absolute",
+        position: 'absolute',
         fontSize: 18,
-        fontWeight: "600",
+        fontWeight: '600',
     },
     performanceContainer: {
-        flexDirection: "row",
-        justifyContent: "space-around",
-        width: "100%",
+        flexDirection: 'row',
+        justifyContent: 'space-around',
+        width: '100%',
         marginBottom: 20,
         paddingHorizontal: 16,
     },
     performanceItem: {
-        alignItems: "center",
+        alignItems: 'center',
         padding: 20,
         borderWidth: 0.5,
-        borderColor: "#D0DBE2",
+        borderColor: '#D0DBE2',
         borderRadius: 16,
     },
     performanceValue: {
         fontSize: 16,
-        fontWeight: "600",
+        fontWeight: '600',
     },
     performanceLabel: {
         fontSize: 12,
-        color: "#90A5B4",
+        color: '#90A5B4',
     },
     icon: {
         height: 36,
         width: 36,
     },
     positive: {
-        color: "#00C853",
+        color: '#00C853',
     },
     negative: {
-        color: "#E95A57",
+        color: '#E95A57',
     },
     button: {
         paddingVertical: 18,
         paddingHorizontal: 18,
         borderRadius: 8,
-        alignItems: "center",
-        width: "60%",
-        alignSelf: "center",
+        alignItems: 'center',
+        width: '60%',
+        alignSelf: 'center',
     },
     reached: {
-        backgroundColor: "#00C853",
+        backgroundColor: '#00C853',
     },
     notReached: {
-        backgroundColor: "#E95A57",
+        backgroundColor: '#E95A57',
     },
     buttonText: {
         fontSize: 16,
-        color: "#FFFFFF",
-        fontWeight: "600",
+        color: '#FFFFFF',
+        fontWeight: '600',
     },
 });
 

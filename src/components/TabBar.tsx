@@ -13,7 +13,7 @@ import {
 import AddIcon from '../../assets/images/add';
 import ArticleIcon from '../../assets/images/article';
 import HomeIcon from '../../assets/images/home';
-import ScheduleIcon from '../../assets/images/schedule';
+import ReminderIcon from '../../assets/images/reminder';
 import SettingIcon from '../../assets/images/setting';
 import StatisticIcon from '../../assets/images/statistic';
 import { useTheme } from '../contexts/ThemeContext';
@@ -162,10 +162,10 @@ export default function TabBar() {
                 target="Home"
             />
             <TabButton
-                routeName="Schedule"
-                label="Schedule"
-                IconComponent={ScheduleIcon}
-                target="Schedule"
+                routeName="Reminder"
+                label="Reminder"
+                IconComponent={ReminderIcon}
+                target="Reminder"
             />
             <TabButton
                 routeName="Setting"

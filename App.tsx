@@ -7,9 +7,10 @@ import { UserProvider } from './src/contexts/UserContext';
 import { WaterTrackerProvider } from './src/contexts/WaterTrackerContext';
 import AppNavigator from './src/navigation/AppNavigator';
 
+
 const MainApp = () => {
     const { colors } = useTheme();
-
+  
     return (
         <WaterTrackerProvider>
             <UserProvider>

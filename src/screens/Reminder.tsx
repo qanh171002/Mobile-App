@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
     Dimensions,
     StyleSheet,
@@ -14,14 +14,16 @@ import Slider from '@react-native-community/slider';
 import TabBar from '../components/TabBar';
 import { useTheme } from '../contexts/ThemeContext';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import AddIcon from '../../assets/images/add';
+import TrashIcon from '../../assets/images/trash';
 
 const screenHeight = Dimensions.get('window').height;
 const tabBarHeight = 60;
 
-const daysOfWeek = ['U', 'M', 'T', 'W', 'R', 'F', 'S'];
-
-export default function Reminder() {
+const Reminder = () => {
     const { colors } = useTheme();
     const [reminders, setReminders] = useState<{ date: Date; days: string[] }[]>([]);
     const [showPicker, setShowPicker] = useState(false);
@@ -30,11 +32,78 @@ export default function Reminder() {
     const [hours, setHours] = useState(0);
     const [minutes, setMinutes] = useState(0);
     const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
+    const [alarmTime, setAlarmTime] = useState<Date | null>(null);
+    const [alarms, setAlarms] = useState<{ date: Date }[]>([]);
     const navigation = useNavigation();
 
+    useEffect(() => {
+        loadReminders();
+        loadAlarms();
+    }, []);
+
+    useFocusEffect(
+        useCallback(() => {
+            loadAlarms();
+        }, [])
+    );
+
+    const saveReminders = async (reminders: { date: Date; days: string[] }[]) => {
+        try {
+            const jsonValue = JSON.stringify(reminders);
+            await AsyncStorage.setItem('@reminders', jsonValue);
+        } catch (e) {
+            console.error('Failed to save reminders.', e);
+        }
+    };
+
+    const loadReminders = async () => {
+        try {
+            const jsonValue = await AsyncStorage.getItem('@reminders');
+            if (jsonValue != null) {
+                setReminders(JSON.parse(jsonValue));
+            }
+        } catch (e) {
+            console.error('Failed to load reminders.', e);
+        }
+    };
+
+    const loadAlarmTime = async () => {
+        try {
+            const jsonValue = await AsyncStorage.getItem('@alarm');
+            if (jsonValue != null) {
+                setAlarmTime(new Date(JSON.parse(jsonValue).date));
+            }
+        } catch (e) {
+            console.error('Failed to load alarm time.', e);
+        }
+    };
+
+    const loadAlarms = async () => {
+        try {
+            const jsonValue = await AsyncStorage.getItem('@alarms');
+            if (jsonValue != null) {
+                setAlarms(JSON.parse(jsonValue));
+            }
+        } catch (e) {
+            console.error('Failed to load alarms.', e);
+        }
+    };
+
     const addReminder = (date: Date, days: string[]) => {
-        setReminders([...reminders, { date, days }]);
+        const newReminders = [...reminders, { date, days }];
+        setReminders(newReminders);
+        saveReminders(newReminders);
         Alert.alert('Reminder Set', `Reminder set for ${date.toLocaleTimeString()} on ${days.join(', ')}`);
+    };
+
+    const deleteAlarm = async (index: number) => {
+        try {
+            const updatedAlarms = alarms.filter((_, i) => i !== index);
+            setAlarms(updatedAlarms);
+            await AsyncStorage.setItem('@alarms', JSON.stringify(updatedAlarms));
+        } catch (e) {
+            console.error('Failed to delete alarm.', e);
+        }
     };
 
     const handleConfirm = (date: Date) => {
@@ -63,64 +132,73 @@ export default function Reminder() {
         navigation.navigate('Scheduler');
     };
 
+    const formatTime = (date: Date) => {
+        let hours = date.getHours();
+        const minutes = date.getMinutes();
+        const amPm = hours >= 12 ? 'PM' : 'AM';
+        hours = hours % 12 || 12;
+        return `${hours}:${minutes < 10 ? '0' : ''}${minutes} ${amPm}`;
+    };
+
+    const renderAlarmItem = useCallback(({ item, index }) => (
+        <View style={[styles.alarmItem, { backgroundColor: colors.nav_background }]}>
+            <Text style={[styles.reminderText, { color: colors.text }]}>
+                {formatTime(new Date(item.date))}
+            </Text>
+            <TouchableOpacity
+                style={styles.inlineDeleteButton}
+                onPress={() => deleteAlarm(index)}
+            >
+                <TrashIcon width={25} height={25} fill={colors.text} />
+            </TouchableOpacity>
+        </View>
+    ), [alarms, colors.text]);
+
+    const renderReminderItem = useCallback(({ item }) => (
+        <View style={styles.reminderItem}>
+            <Text style={[styles.reminderText, { color: colors.text }]}>
+                {formatTime(new Date(item.date))} on {item.days.join(', ')}
+            </Text>
+        </View>
+    ), [reminders, colors.text]);
+
     return (
         <>
-            <View
-                style={[
-                    styles.container,
-                    {
-                        backgroundColor: colors.background,
-                        height: screenHeight - tabBarHeight,
-                    },
-                ]}
+            <SafeAreaView
+                style={[styles.container, { backgroundColor: colors.background, height: screenHeight - tabBarHeight }]}
             >
-                <Text
-                    style={[styles.header, { color: colors.text }]}
-                >
-                    Reminder
-                </Text>
-                <View style={styles.daysContainer}>
-                    {daysOfWeek.map((day) => (
-                        <TouchableOpacity
-                            key={day}
-                            style={[
-                                styles.dayButton,
-                                selectedDays.includes(day) && styles.selectedDayButton,
-                            ]}
-                            onPress={() => toggleDaySelection(day)}
-                        >
-                            <Text
-                                style={[
-                                    styles.dayButtonText,
-                                    selectedDays.includes(day) && styles.selectedDayButtonText,
-                                ]}
-                            >
-                                {day}
-                            </Text>
-                        </TouchableOpacity>
-                    ))}
-                </View>
+                <Text style={[styles.header, { color: colors.text }]}>Reminder</Text>
+                {alarms.length > 0 ? (
+                    <FlatList
+                        data={alarms}
+                        renderItem={renderAlarmItem}
+                        keyExtractor={(item, index) => index.toString()}
+                        contentContainerStyle={{
+                            paddingBottom: tabBarHeight,
+                        }}
+                    />
+                ) : (
+                    <View style={styles.noRemindersContainer}>
+                        <Text style={[styles.reminderText, { color: colors.text }]}>
+                            No reminders set.
+                        </Text>
+                    </View>
+                )}
                 <FlatList
                     data={reminders}
-                    renderItem={({ item }) => (
-                        <View style={styles.reminderItem}>
-                            <Text style={[styles.reminderText, { color: colors.text }]}>
-                                {item.date.toLocaleTimeString()} on {item.days.join(', ')}
-                            </Text>
-                        </View>
-                    )}
+                    renderItem={renderReminderItem}
                     keyExtractor={(item, index) => index.toString()}
                     contentContainerStyle={{
                         paddingBottom: tabBarHeight,
                     }}
                 />
-            </View>
+            </SafeAreaView>
             <TabBar />
             <TouchableOpacity
-                style={styles.fab}
+                style={[styles.fab, { backgroundColor: colors.primary }]}
                 onPress={navigateToScheduler}
             >
-                <Text style={styles.fabText}>+</Text>
+                <AddIcon width={18} height={18} fill="#fff" />
             </TouchableOpacity>
             <DateTimePickerModal
                 isVisible={isDatePickerVisible}
@@ -177,7 +255,6 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         right: 30,
         bottom: 90, // Adjusted to be above the TabBar
-        backgroundColor: '#007AFF',
         borderRadius: 30,
         elevation: 8,
     },
@@ -242,4 +319,30 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         alignItems: 'center',
     },
+    alarmItem: {
+        padding: 15,
+        marginVertical: 10,
+        marginHorizontal: '5%',
+        borderRadius: 10,
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+    },
+    inlineDeleteButton: {
+        padding: 0,
+        marginLeft: 10,
+    },
+    deleteButtonText: {
+        color: '#fff',
+        fontSize: 16,
+        fontFamily: 'Cera_Bold',
+    },
+    noRemindersContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginTop: -tabBarHeight, // Adjust to account for tab bar height
+    },
 });
+
+export default React.memo(Reminder);

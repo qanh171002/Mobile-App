@@ -58,12 +58,12 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
                       status: 'light-content',
                   }
                 : {
-                      background: '#fafafa',
+                      background: '#f5f4fa',
                       sub_background: '#d0eaff',
                       nav_background: '#fff',
                       nav_text: '#bcbcbc',
                       text: '#121212',
-                      card: '#fafafa',
+                      card: '#f5f4fa',
                       primary: '#0ea6e9',
                       item: '#F4F8FB',
                       status: 'dark-content',

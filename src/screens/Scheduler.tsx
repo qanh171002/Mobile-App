@@ -149,7 +149,7 @@ export default function Scheduler() {
                 />
             )}
             <TouchableOpacity style={[styles.button, { backgroundColor: colors.primary }]} onPress={handleConfirm}>
-                <Text style={[styles.buttonText, { color: colors.buttonText }]}>Set Alarm</Text>
+                <Text style={[styles.buttonText, { color: "#fff" }]}>Set Alarm</Text>
             </TouchableOpacity>
         </View>
     );
@@ -172,6 +172,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     buttonText: {
+        fontFamily: 'Cera_Bold',
         fontSize: 18,
     },
     selectedTime: {
@@ -236,6 +237,7 @@ const styles = StyleSheet.create({
     },
     elementTextStyle: {
         fontSize: 18,
+        fontFamily: 'Cera_Bold',
     },
     largeText: {
         fontSize: 24,

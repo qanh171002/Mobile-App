@@ -15,10 +15,6 @@ import Login from '../screens/Login';
 import Profile from '../screens/Profile';
 import Result from '../screens/Result';
 import Reminder from '../screens/Reminder';
-<<<<<<< HEAD
-=======
-import Scheduler from '../screens/Scheduler';
->>>>>>> 2c95a775dae3e972bca47ee1088195e6c17a0f0f
 import SetGoal from '../screens/SetGoal';
 import Setting from '../screens/Setting';
 import Scheduler from '../screens/Scheduler';
@@ -26,9 +22,6 @@ import Statistic from '../screens/Statistic';
 import WaterTracker from '../screens/WaterTracker';
 import WebViewScreen from '../screens/WebViewScreen';
 
-// Import your WebView screen
-
-// Add `WebViewScreen` to the navigation parameter list
 export type RootStackParamList = {
     LandingPage1: undefined;
     LandingPage2: undefined;
@@ -40,14 +33,6 @@ export type RootStackParamList = {
     Setting: undefined;
     Profile: undefined;
     Reminder: undefined;
-<<<<<<< HEAD
-=======
-    Scheduler: undefined;
->>>>>>> 2c95a775dae3e972bca47ee1088195e6c17a0f0f
-    SetGoal: undefined;
-    Scheduler: undefined;
-    WaterTracker: undefined;
-    Result: undefined;
     WebViewScreen: { link: string };
 };
 
@@ -93,7 +78,7 @@ const AppNavigator = () => {
                     <Stack.Screen name="Result" component={Result} />
                     <Stack.Screen
                         name="WebViewScreen"
-                        component={WebViewScreen} // Add WebViewScreen to the stack
+                        component={WebViewScreen}
                     />
                 </Stack.Navigator>
             </NavigationContainer>

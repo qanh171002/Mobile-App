@@ -1,14 +1,20 @@
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import React, { useEffect, useRef } from 'react';
+import React from 'react';
 import {
-    Animated,
     Dimensions,
     StyleSheet,
     Text,
     TouchableOpacity,
     View,
 } from 'react-native';
+import Animated, {
+    interpolate,
+    useAnimatedStyle,
+    useSharedValue,
+    withSpring,
+    withTiming,
+} from 'react-native-reanimated';
 
 import AddIcon from '../../assets/images/add';
 import ArticleIcon from '../../assets/images/article';
@@ -33,111 +39,93 @@ interface TabButtonProps {
 
 const windowWidth = Dimensions.get('window').width;
 
-const TabButton: React.FC<TabButtonProps> = ({
-    routeName,
-    label,
-    IconComponent,
-    target,
-    onPress,
-}) => {
-    const navigation =
-        useNavigation<NativeStackNavigationProp<RootStackParamList>>();
-    const route = useRoute();
-    const { colors } = useTheme();
-    const isFocused = route.name === routeName;
+const TabButton: React.FC<TabButtonProps> = React.memo(
+    ({ routeName, label, IconComponent, target, onPress }) => {
+        const navigation =
+            useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+        const route = useRoute();
+        const { colors } = useTheme();
+        const isFocused = route.name === routeName;
 
-    const scaleAnim = useRef(new Animated.Value(0)).current;
-    const rotateAnim = useRef(new Animated.Value(0)).current; // Added for rotation
-    const isRotated = useRef(false); // State to track rotation toggle
+        const scale = useSharedValue(0);
+        const rotation = useSharedValue(0);
 
-    useEffect(() => {
-        if (isFocused && routeName === 'Home') {
-            Animated.spring(scaleAnim, {
-                toValue: 1,
-                useNativeDriver: true,
-            }).start();
-        } else {
-            scaleAnim.setValue(0);
-        }
-    }, [isFocused, routeName]);
-
-    const handlePress = () => {
-        if (routeName === 'Home') {
-            if (onPress) {
-                onPress();
-            }
-            toggleRotation(); // Trigger rotation when Add button is pressed
-        }
-        navigation.navigate(target);
-    };
-
-    const toggleRotation = () => {
-        const rotateTo = isRotated.current ? 0 : 1; // Toggle between 0 and 1
-        Animated.timing(rotateAnim, {
-            toValue: rotateTo,
-            duration: 500,
-            useNativeDriver: true,
-        }).start(() => {
-            isRotated.current = !isRotated.current; // Update toggle state
+        const animatedStyle = useAnimatedStyle(() => {
+            return {
+                transform: [
+                    { scale: interpolate(scale.value, [0, 1], [1, 1.2]) },
+                    {
+                        rotate: `${interpolate(rotation.value, [0, 1], [0, 45])}deg`,
+                    },
+                ],
+            };
         });
-    };
 
-    // Map rotation value to degrees
-    const rotateInterpolate = rotateAnim.interpolate({
-        inputRange: [0, 1],
-        outputRange: ['0deg', '45deg'], // 0 -> 45 degrees
-    });
+        React.useEffect(() => {
+            if (isFocused && routeName === 'Home') {
+                scale.value = withSpring(1, { damping: 10, stiffness: 90 });
+            } else {
+                scale.value = withSpring(0);
+            }
+        }, [isFocused, routeName]);
 
-    return (
-        <TouchableOpacity
-            onPress={handlePress}
-            style={styles.tabButton}
-            activeOpacity={1}
-        >
-            {routeName === 'Home' && isFocused ? (
-                <Animated.View
-                    style={[
-                        styles.roundIcon,
-                        { backgroundColor: colors.primary }, // Dynamic bg color
-                        {
-                            transform: [
-                                { scale: scaleAnim },
-                                { rotate: rotateInterpolate }, // Apply rotation
-                            ],
-                        },
-                    ]}
-                >
-                    <AddIcon fill="#fff" width={22} height={22} />
-                </Animated.View>
-            ) : (
-                <>
-                    <IconComponent
-                        fill={isFocused ? colors.primary : colors.nav_text}
-                        width={isFocused ? 28 : 24}
-                        height={isFocused ? 28 : 24}
-                    />
-                    <Text
+        const handlePress = React.useCallback(() => {
+            if (routeName === 'Home') {
+                if (rotation.value === 0) {
+                    rotation.value = withTiming(1, { duration: 300 });
+                } else {
+                    rotation.value = withTiming(0, { duration: 300 });
+                }
+                onPress?.();
+            }
+            navigation.navigate(target);
+        }, [routeName, rotation, navigation, onPress, target]);
+
+        return (
+            <TouchableOpacity
+                onPress={handlePress}
+                style={styles.tabButton}
+                activeOpacity={1}
+            >
+                {routeName === 'Home' && isFocused ? (
+                    <Animated.View
                         style={[
-                            styles.tabText,
-                            {
-                                color: isFocused
-                                    ? colors.primary
-                                    : colors.nav_text,
-                            },
-                            isFocused && styles.selectedTabText,
+                            styles.roundIcon,
+                            { backgroundColor: colors.primary },
+                            animatedStyle,
                         ]}
                     >
-                        {label}
-                    </Text>
-                </>
-            )}
-        </TouchableOpacity>
-    );
-};
+                        <AddIcon fill="#fff" width={20} height={20} />
+                    </Animated.View>
+                ) : (
+                    <>
+                        <IconComponent
+                            fill={isFocused ? colors.primary : colors.nav_text}
+                            width={isFocused ? 28 : 24}
+                            height={isFocused ? 28 : 24}
+                        />
+                        <Text
+                            style={[
+                                styles.tabText,
+                                {
+                                    color: isFocused
+                                        ? colors.primary
+                                        : colors.nav_text,
+                                },
+                                isFocused && styles.selectedTabText,
+                            ]}
+                        >
+                            {label}
+                        </Text>
+                    </>
+                )}
+            </TouchableOpacity>
+        );
+    },
+);
 
-// Main TabBar component
 export default function TabBar() {
-    const { colors } = useTheme(); // Get colors from the theme context
+    const { colors } = useTheme();
 
     return (
         <View
@@ -177,7 +165,6 @@ export default function TabBar() {
     );
 }
 
-// Updated styles to allow dynamic colors
 const styles = StyleSheet.create({
     tabBar: {
         flexDirection: 'row',
@@ -210,12 +197,12 @@ const styles = StyleSheet.create({
         fontFamily: 'Cera_Bold',
     },
     roundIcon: {
-        width: windowWidth * 0.22,
-        height: windowWidth * 0.22,
+        width: windowWidth * 0.19,
+        height: windowWidth * 0.19,
         justifyContent: 'center',
         alignItems: 'center',
         position: 'absolute',
-        top: -windowWidth * 0.075,
-        borderRadius: windowWidth * 0.11,
+        top: -windowWidth * 0.065,
+        borderRadius: windowWidth * 0.095,
     },
 });

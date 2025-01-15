@@ -15,6 +15,10 @@ import Login from '../screens/Login';
 import Profile from '../screens/Profile';
 import Result from '../screens/Result';
 import Reminder from '../screens/Reminder';
+<<<<<<< HEAD
+=======
+import Scheduler from '../screens/Scheduler';
+>>>>>>> 2c95a775dae3e972bca47ee1088195e6c17a0f0f
 import SetGoal from '../screens/SetGoal';
 import Setting from '../screens/Setting';
 import Scheduler from '../screens/Scheduler';
@@ -36,6 +40,10 @@ export type RootStackParamList = {
     Setting: undefined;
     Profile: undefined;
     Reminder: undefined;
+<<<<<<< HEAD
+=======
+    Scheduler: undefined;
+>>>>>>> 2c95a775dae3e972bca47ee1088195e6c17a0f0f
     SetGoal: undefined;
     Scheduler: undefined;
     WaterTracker: undefined;

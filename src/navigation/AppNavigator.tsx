@@ -14,7 +14,8 @@ import LandingPage3 from '../screens/LandingPage3';
 import Login from '../screens/Login';
 import Profile from '../screens/Profile';
 import Result from '../screens/Result';
-import Schedule from '../screens/Schedule';
+import Reminder from '../screens/Reminder';
+import Scheduler from '../screens/Scheduler';
 import SetGoal from '../screens/SetGoal';
 import Setting from '../screens/Setting';
 import Statistic from '../screens/Statistic';
@@ -34,7 +35,8 @@ export type RootStackParamList = {
     Home: undefined;
     Setting: undefined;
     Profile: undefined;
-    Schedule: undefined;
+    Reminder: undefined;
+    Scheduler: undefined;
     SetGoal: undefined;
     WaterTracker: undefined;
     Result: undefined;
@@ -69,7 +71,8 @@ const AppNavigator = () => {
                     />
                     <Stack.Screen name="Login" component={Login} />
                     <Stack.Screen name="Home" component={Home} />
-                    <Stack.Screen name="Schedule" component={Schedule} />
+                    <Stack.Screen name="Reminder" component={Reminder} />
+                    <Stack.Screen name="Scheduler" component={Scheduler} />
                     <Stack.Screen name="Profile" component={Profile} />
                     <Stack.Screen name="Article" component={Article} />
                     <Stack.Screen name="Statistic" component={Statistic} />

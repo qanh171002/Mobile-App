@@ -63,16 +63,16 @@ const WaterAnimation = () => {
                 <Path
                     fill="#0ea6e9"
                     fillOpacity="0.41"
-                    d={generateWavePath(-180, -20, 1.2)}
+                    d={generateWavePath(-340, -20, 1.2)}
                 />
                 <Path
                     fill="#0ea6e9"
                     fillOpacity="0.41"
-                    d={generateWavePath(-220, -30, 0.9)}
+                    d={generateWavePath(-300, -30, 0.9)}
                 />
                 <Path
                     fill="#0ea6e9"
-                    fillOpacity="0.41"
+                    fillOpacity="1"
                     d={generateWavePath(-260, -30, 0.7)}
                 />
             </Svg>

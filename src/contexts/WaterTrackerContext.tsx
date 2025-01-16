@@ -19,7 +19,7 @@ export const WaterTrackerProvider: React.FC<{ children: React.ReactNode }> = ({
 }) => {
     const [currentLevel, setCurrentLevel] = useState(0);
     const [maxLevel, setMaxLevel] = useState(10);
-    const [selectedValue, setSelectedValue] = useState('Số ly nước');
+    const [selectedValue, setSelectedValue] = useState('bottle');
 
     const increaseLevel = (amount: number) => {
         setCurrentLevel((prev) => Math.min(prev + amount, 10));

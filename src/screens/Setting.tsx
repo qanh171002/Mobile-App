@@ -187,7 +187,7 @@ export default function HistoryScreen() {
                                     { color: colors.primary },
                                 ]}
                             >
-                                {isDarkTheme ? 'Chế độ tối' : 'Chế độ sáng'}
+                                {isDarkTheme ? 'Dark' : 'Light'}
                             </Text>
                         </TouchableOpacity>
                         <View style={styles.unitOption}>
@@ -205,9 +205,9 @@ export default function HistoryScreen() {
                                     { color: colors.primary },
                                 ]}
                             >
-                                {selectedValue === 'Số ly nước'
-                                    ? 'Số ly nước'
-                                    : 'Số ml'}
+                                {selectedValue === 'bottle'
+                                    ? 'Bottle'
+                                    : 'ml'}
                             </Text>
                         </View>
                         <View style={styles.unitOption}>

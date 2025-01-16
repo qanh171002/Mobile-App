@@ -12,6 +12,7 @@ import {
     View,
 } from 'react-native';
 import { Dropdown } from 'react-native-element-dropdown';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import { useTheme } from '../contexts/ThemeContext';
 import { useWaterTracker } from '../contexts/WaterTrackerContext';
@@ -26,26 +27,37 @@ interface Template {
 }
 
 const SetGoal = () => {
-    const [displayedTemplates, setDisplayedTemplates] = React.useState<
-        Template[]
-    >([]);
-    const { maxLevel, chooseLevel, selectedValue, setSelectedValue } =
-        useWaterTracker();
+    const [displayedTemplates, setDisplayedTemplates] = React.useState<Template[]>([]);
+    const { maxLevel, chooseLevel, selectedValue, setSelectedValue } = useWaterTracker();
     const { colors } = useTheme();
 
     React.useEffect(() => {
         const updatedTemplates = templates.map((template) => {
             const newValue =
-                selectedValue === 'Số ml'
-                    ? template.value * 200 + ' ml'
-                    : template.value + ' Ly';
+                selectedValue === 'ml'
+                    ? template.value + ' ml'
+                    : (template.value / 29.5735).toFixed(2) + ' oz'; // Convert ml to oz
             return { ...template, displayValue: newValue };
         });
         setDisplayedTemplates(updatedTemplates);
     }, [selectedValue]);
 
-    const handleChooseTemplate = (value: string) => {
-        chooseLevel(parseInt(value));
+    React.useEffect(() => {
+        setSelectedValue('oz'); // Set default value to 'oz'
+    }, []);
+
+    const handleChooseTemplate = async (value: string) => {
+        try {
+            const templateData = {
+                value: value,
+                unit: selectedValue,
+            };
+            await AsyncStorage.setItem('@selectedTemplate', JSON.stringify(templateData));
+            chooseLevel(parseInt(value));
+            navigation.navigate('Home');
+        } catch (e) {
+            console.error('Failed to save the selected template.', e);
+        }
     };
 
     const navigation =
@@ -57,26 +69,26 @@ const SetGoal = () => {
     const templates: Template[] = [
         {
             id: '1',
-            name: 'Mùa hè',
-            value: 10,
+            name: 'Summer',
+            value: 2000,
             icon: 'https://cdn-icons-png.flaticon.com/512/10484/10484158.png',
         },
         {
             id: '2',
-            name: 'Thể thao',
-            value: 7,
+            name: 'Sport',
+            value: 1500,
             icon: 'https://cdn-icons-png.flaticon.com/512/1041/1041168.png',
         },
         {
             id: '3',
-            name: 'Mùa đông',
-            value: 5,
+            name: 'Winter',
+            value: 1200,
             icon: 'https://cdn-icons-png.flaticon.com/512/2336/2336319.png',
         },
         {
             id: '4',
-            name: 'Trẻ em',
-            value: 4,
+            name: 'Children',
+            value: 700,
             icon: 'https://cdn-icons-png.flaticon.com/512/523/523495.png',
         },
     ];
@@ -112,7 +124,7 @@ const SetGoal = () => {
                 </TouchableOpacity>
                 <View style={styles.headerTitleContainer}>
                     <Text style={[styles.headerText, { color: colors.text }]}>
-                        Đặt Mục Tiêu
+                        Set Goal
                     </Text>
                 </View>
             </View>
@@ -126,14 +138,17 @@ const SetGoal = () => {
             <Dropdown
                 style={styles.dropdown}
                 data={[
-                    { label: 'Số ly nước', value: 'Số ly nước' },
-                    { label: 'Số ml', value: 'Số ml' },
+                    { label: 'oz', value: 'oz' },
+                    { label: 'ml', value: 'ml' },
                 ]}
                 labelField="label"
                 valueField="value"
                 value={selectedValue}
                 onChange={(item) => setSelectedValue(item.value)}
-                placeholder="Đơn vị: Số ly nước"
+                placeholder="Select unit"
+                placeholderStyle={styles.placeholderText}
+                itemTextStyle={styles.placeholderText}
+                selectedTextStyle={styles.placeholderText}
             />
             <View
                 style={[
@@ -142,14 +157,20 @@ const SetGoal = () => {
                 ]}
             >
                 <Text style={[styles.sectionTitle, { color: colors.text }]}>
-                    Mục tiêu uống nước
+                    Drink Goal
                 </Text>
                 <Text style={styles.sectionSubtitle}>
-                    Chúng tôi đã chuẩn bị nhiều mục tiêu cho bạn!
+                    We have prepared many goals for you!
                 </Text>
                 <TextInput
-                    style={[styles.searchBox, { backgroundColor: colors.item }]}
-                    placeholder="Tìm kiếm theo template"
+                    style={[
+                        styles.searchBox,
+                        {
+                            backgroundColor: colors.item,
+                            fontFamily: 'Cera_Regular',
+                        },
+                    ]}
+                    placeholder="Search by template"
                     placeholderTextColor={colors.text}
                 />
 
@@ -174,8 +195,8 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'center',
-        marginBottom: 20,
-        marginTop: 56,
+        marginBottom: 10,
+        marginTop: 50,
         marginLeft: 16,
         gap: 10,
     },
@@ -191,16 +212,15 @@ const styles = StyleSheet.create({
     },
     headerText: {
         fontSize: 21,
-        fontWeight: '600',
+        fontFamily: 'Cera_Bold',
     },
     goalContainer: {
         alignItems: 'center',
         justifyContent: 'center',
-        padding: 20,
-        borderRadius: 10,
+        padding: 10,
+        borderRadius: 15,
         marginBottom: 20,
     },
-
     flag: {
         width: 80,
         height: 80,
@@ -219,9 +239,9 @@ const styles = StyleSheet.create({
     dropdown: {
         backgroundColor: '#FFF',
         borderRadius: 10,
-        paddingVertical: 15,
+        paddingVertical: 10,
         paddingHorizontal: 15,
-        marginBottom: 61,
+        marginBottom: "10%",
         width: '60%',
         alignSelf: 'center',
         borderWidth: 1,
@@ -240,13 +260,17 @@ const styles = StyleSheet.create({
         shadowColor: '#1BA9E1',
         elevation: 5,
     },
+    placeholderText: {
+        fontFamily: 'Cera_Medium',
+    },
     sectionTitle: {
         fontSize: 22,
-        fontWeight: '600',
+        fontFamily: 'Cera_Bold',
         marginBottom: 8,
         textAlign: 'center',
     },
     sectionSubtitle: {
+        fontFamily: 'Cera_Medium',
         fontSize: 14,
         color: '#90A5B4',
         marginBottom: 36,
@@ -276,11 +300,12 @@ const styles = StyleSheet.create({
     },
     templateName: {
         fontSize: 12,
-        fontWeight: '500',
+        fontFamily: 'Cera_Medium',
         color: '#90A5B4',
     },
     templateValue: {
         fontSize: 16,
+        fontFamily: 'Cera_Regular',
         color: '#141A1E',
         marginTop: 5,
         fontWeight: '600',

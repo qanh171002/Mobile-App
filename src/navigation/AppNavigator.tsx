@@ -13,14 +13,15 @@ import LandingPage2 from '../screens/LandingPage2';
 import LandingPage3 from '../screens/LandingPage3';
 import Login from '../screens/Login';
 import Profile from '../screens/Profile';
-import Result from '../screens/Result';
 import Reminder from '../screens/Reminder';
+import Result from '../screens/Result';
+import Scheduler from '../screens/Scheduler';
 import SetGoal from '../screens/SetGoal';
 import Setting from '../screens/Setting';
-import Scheduler from '../screens/Scheduler';
 import Statistic from '../screens/Statistic';
 import WaterTracker from '../screens/WaterTracker';
 import WebViewScreen from '../screens/WebViewScreen';
+import InputScreen from '../screens/InputScreen';
 
 export type RootStackParamList = {
     LandingPage1: undefined;
@@ -31,9 +32,14 @@ export type RootStackParamList = {
     Statistic: undefined;
     Home: undefined;
     Setting: undefined;
+    SetGoal: undefined;
     Profile: undefined;
     Reminder: undefined;
+    Scheduler: undefined;
+    WaterTracker: undefined;
+    Result: undefined;
     WebViewScreen: { link: string };
+    InputScreen: undefined;
 };
 
 const Stack = createStackNavigator<RootStackParamList>();
@@ -80,6 +86,7 @@ const AppNavigator = () => {
                         name="WebViewScreen"
                         component={WebViewScreen}
                     />
+                    <Stack.Screen name="InputScreen" component={InputScreen} />
                 </Stack.Navigator>
             </NavigationContainer>
         </SafeAreaProvider>

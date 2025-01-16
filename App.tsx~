@@ -34,7 +34,6 @@ const MainApp = React.memo(() => {
                     barStyle={colors.status}
                 />
                 <AppNavigator />
-                <Toast />
             </UserProvider>
         </WaterTrackerProvider>
     );

@@ -1,10 +1,20 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Alert, Dimensions, TextInput } from 'react-native';
-import { Picker } from '@react-native-picker/picker';
-import { WheelPicker } from 'react-native-infinite-wheel-picker';
-import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Picker } from '@react-native-picker/picker';
+import { NavigationProp, useNavigation } from '@react-navigation/native';
+import React, { useState } from 'react';
+import {
+    Alert,
+    Dimensions,
+    StyleSheet,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    View,
+} from 'react-native';
+import { WheelPicker } from 'react-native-infinite-wheel-picker';
+
 import { useTheme } from '../contexts/ThemeContext';
+import { RootStackParamList } from '../navigation/AppNavigator';
 
 const daysOfWeek = ['U', 'M', 'T', 'W', 'R', 'F', 'S'];
 
@@ -18,16 +28,20 @@ export default function Scheduler() {
     const [hours, setHours] = useState(1);
     const [minutes, setMinutes] = useState(0);
     const [amPm, setAmPm] = useState('AM');
-    const navigation = useNavigation();
+
+    const navigation = useNavigation<NavigationProp<RootStackParamList>>();
 
     const handleVolumeChange = (value: string) => {
-        if (/^\d*$/.test(value)) { // Ensure only integers are entered
+        if (/^\d*$/.test(value)) {
+            // Ensure only integers are entered
             setCustomVolume(value);
         }
     };
 
     const getVolume = () => {
-        return selectedVolume === 'custom' ? `${customVolume}ml` : selectedVolume;
+        return selectedVolume === 'custom'
+            ? `${customVolume}ml`
+            : selectedVolume;
     };
 
     const saveAlarm = async () => {
@@ -46,51 +60,81 @@ export default function Scheduler() {
     };
 
     const handleConfirm = () => {
-        if (selectedVolume === 'custom' && (!customVolume || customVolume === '' || customVolume === '0')) {
+        if (
+            selectedVolume === 'custom' &&
+            (!customVolume || customVolume === '' || customVolume === '0')
+        ) {
             Alert.alert('Error', 'Please enter a valid custom volume in ml.');
             return;
         }
-        saveAlarm();
-        Alert.alert('Alarm Set', `Alarm set for ${hours}:${minutes < 10 ? '0' : ''}${minutes} ${amPm} with ${getVolume()}`, [
-            {
-                text: 'OK',
-                onPress: () => navigation.navigate('Reminder'),
-            },
-        ]);
+        void saveAlarm();
+        Alert.alert(
+            'Alarm Set',
+            `Alarm set for ${hours}:${minutes < 10 ? '0' : ''}${minutes} ${amPm} with ${getVolume()}`,
+            [
+                {
+                    text: 'OK',
+                    onPress: () => navigation.navigate('Reminder'),
+                },
+            ],
+        );
     };
 
     const toggleDaySelection = (day: string) => {
         setSelectedDays((prevDays) =>
             prevDays.includes(day)
                 ? prevDays.filter((d) => d !== day)
-                : [...prevDays, day]
+                : [...prevDays, day],
         );
     };
 
     return (
-        <View style={[styles.container, { backgroundColor: colors.background }]}>
+        <View
+            style={[styles.container, { backgroundColor: colors.background }]}
+        >
             <View style={styles.wheelPickerContainer}>
                 <WheelPicker
                     initialSelectedIndex={Math.max(0, Math.min(hours - 1, 11))}
-                    data={Array.from({ length: 12 }, (_, i) => (i + 1).toString())}
+                    data={Array.from({ length: 12 }, (_, i) =>
+                        (i + 1).toString(),
+                    )}
                     restElements={1} // Show only one adjacent element on each side
                     elementHeight={30}
-                    onChangeValue={(index, value) => setHours(parseInt(value))}
+                    onChangeValue={(_index, value) => setHours(parseInt(value))}
                     selectedIndex={Math.max(0, Math.min(hours - 1, 11))}
                     containerStyle={styles.wheelPicker}
-                    selectedLayoutStyle={[styles.selectedLayoutStyle, { backgroundColor: colors.sub_background }]}
-                    elementTextStyle={[styles.elementTextStyle, styles.largeText, { color: colors.text }]}
+                    selectedLayoutStyle={[
+                        styles.selectedLayoutStyle,
+                        { backgroundColor: colors.sub_background },
+                    ]}
+                    elementTextStyle={[
+                        styles.elementTextStyle,
+                        styles.largeText,
+                        { color: colors.text },
+                    ]}
                 />
                 <WheelPicker
                     initialSelectedIndex={Math.max(0, Math.min(minutes, 59))}
-                    data={Array.from({ length: 60 }, (_, i) => (i < 10 ? '0' : '') + i.toString())}
+                    data={Array.from(
+                        { length: 60 },
+                        (_, i) => (i < 10 ? '0' : '') + i.toString(),
+                    )}
                     restElements={1} // Show only one adjacent element on each side
                     elementHeight={30}
-                    onChangeValue={(index, value) => setMinutes(parseInt(value))}
+                    onChangeValue={(_index, value) =>
+                        setMinutes(parseInt(value))
+                    }
                     selectedIndex={Math.max(0, Math.min(minutes, 59))}
                     containerStyle={styles.wheelPicker}
-                    selectedLayoutStyle={[styles.selectedLayoutStyle, { backgroundColor: colors.sub_background }]}
-                    elementTextStyle={[styles.elementTextStyle, styles.largeText, { color: colors.text }]}
+                    selectedLayoutStyle={[
+                        styles.selectedLayoutStyle,
+                        { backgroundColor: colors.sub_background },
+                    ]}
+                    elementTextStyle={[
+                        styles.elementTextStyle,
+                        styles.largeText,
+                        { color: colors.text },
+                    ]}
                 />
                 <WheelPicker
                     initialSelectedIndex={amPm === 'AM' ? 0 : 1}
@@ -98,11 +142,17 @@ export default function Scheduler() {
                     restElements={1} // Show only one adjacent element on each side
                     elementHeight={30}
                     infiniteScroll={false}
-                    onChangeValue={(index, value) => setAmPm(value)}
+                    onChangeValue={(_index, value) => setAmPm(value)}
                     selectedIndex={amPm === 'AM' ? 0 : 1}
                     containerStyle={styles.wheelPicker}
-                    selectedLayoutStyle={[styles.selectedLayoutStyle, { backgroundColor: colors.sub_background }]}
-                    elementTextStyle={[styles.elementTextStyle, { color: colors.text }]}
+                    selectedLayoutStyle={[
+                        styles.selectedLayoutStyle,
+                        { backgroundColor: colors.sub_background },
+                    ]}
+                    elementTextStyle={[
+                        styles.elementTextStyle,
+                        { color: colors.text },
+                    ]}
                 />
             </View>
             <View style={styles.daysContainer}>
@@ -111,16 +161,26 @@ export default function Scheduler() {
                         key={day}
                         style={[
                             styles.dayButton,
-                            selectedDays.includes(day) && styles.selectedDayButton,
-                            { backgroundColor: selectedDays.includes(day) ? colors.primary : colors.sub_background },
+                            selectedDays.includes(day) &&
+                                styles.selectedDayButton,
+                            {
+                                backgroundColor: selectedDays.includes(day)
+                                    ? colors.primary
+                                    : colors.sub_background,
+                            },
                         ]}
                         onPress={() => toggleDaySelection(day)}
                     >
                         <Text
                             style={[
                                 styles.dayButtonText,
-                                selectedDays.includes(day) && styles.selectedDayButtonText,
-                                { color: selectedDays.includes(day) ? '#fff' : colors.text },
+                                selectedDays.includes(day) &&
+                                    styles.selectedDayButtonText,
+                                {
+                                    color: selectedDays.includes(day)
+                                        ? '#fff'
+                                        : colors.text,
+                                },
                             ]}
                         >
                             {day}
@@ -140,16 +200,20 @@ export default function Scheduler() {
             </Picker>
             {selectedVolume === 'custom' && (
                 <TextInput
-                    style={[styles.customVolumeInput, { borderColor: colors.border, color: colors.text }]}
+                    style={[styles.customVolumeInput, { color: colors.text }]}
                     keyboardType="numeric"
                     value={customVolume}
                     onChangeText={handleVolumeChange}
                     placeholder="Enter volume in ml"
-                    placeholderTextColor={colors.placeholder}
                 />
             )}
-            <TouchableOpacity style={[styles.button, { backgroundColor: colors.primary }]} onPress={handleConfirm}>
-                <Text style={[styles.buttonText, { color: "#fff" }]}>Set Alarm</Text>
+            <TouchableOpacity
+                style={[styles.button, { backgroundColor: colors.primary }]}
+                onPress={handleConfirm}
+            >
+                <Text style={[styles.buttonText, { color: '#fff' }]}>
+                    Set Alarm
+                </Text>
             </TouchableOpacity>
         </View>
     );

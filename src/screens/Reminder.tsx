@@ -1,31 +1,34 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import Slider from '@react-native-community/slider';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
+    Alert,
+    Button,
     Dimensions,
+    FlatList,
+    Modal,
     StyleSheet,
     Text,
     TouchableOpacity,
     View,
-    FlatList,
-    Alert,
-    Modal,
-    Button,
 } from 'react-native';
-import Slider from '@react-native-community/slider';
-import TabBar from '../components/TabBar';
-import { useTheme } from '../contexts/ThemeContext';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
-import { useNavigation, useFocusEffect } from '@react-navigation/native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { SafeAreaView } from 'react-native-safe-area-context';
+
 import AddIcon from '../../assets/images/add';
 import TrashIcon from '../../assets/images/trash';
+import TabBar from '../components/TabBar';
+import { useTheme } from '../contexts/ThemeContext';
 
 const screenHeight = Dimensions.get('window').height;
 const tabBarHeight = 60;
 
 const Reminder = () => {
     const { colors } = useTheme();
-    const [reminders, setReminders] = useState<{ date: Date; days: string[] }[]>([]);
+    const [reminders, setReminders] = useState<
+        { date: Date; days: string[] }[]
+    >([]);
     const [showPicker, setShowPicker] = useState(false);
     const [selectedDate, setSelectedDate] = useState(new Date());
     const [selectedDays, setSelectedDays] = useState<string[]>([]);
@@ -44,10 +47,12 @@ const Reminder = () => {
     useFocusEffect(
         useCallback(() => {
             loadAlarms();
-        }, [])
+        }, []),
     );
 
-    const saveReminders = async (reminders: { date: Date; days: string[] }[]) => {
+    const saveReminders = async (
+        reminders: { date: Date; days: string[] }[],
+    ) => {
         try {
             const jsonValue = JSON.stringify(reminders);
             await AsyncStorage.setItem('@reminders', jsonValue);
@@ -93,14 +98,20 @@ const Reminder = () => {
         const newReminders = [...reminders, { date, days }];
         setReminders(newReminders);
         saveReminders(newReminders);
-        Alert.alert('Reminder Set', `Reminder set for ${date.toLocaleTimeString()} on ${days.join(', ')}`);
+        Alert.alert(
+            'Reminder Set',
+            `Reminder set for ${date.toLocaleTimeString()} on ${days.join(', ')}`,
+        );
     };
 
     const deleteAlarm = async (index: number) => {
         try {
             const updatedAlarms = alarms.filter((_, i) => i !== index);
             setAlarms(updatedAlarms);
-            await AsyncStorage.setItem('@alarms', JSON.stringify(updatedAlarms));
+            await AsyncStorage.setItem(
+                '@alarms',
+                JSON.stringify(updatedAlarms),
+            );
         } catch (e) {
             console.error('Failed to delete alarm.', e);
         }
@@ -124,7 +135,7 @@ const Reminder = () => {
         setSelectedDays((prevDays) =>
             prevDays.includes(day)
                 ? prevDays.filter((d) => d !== day)
-                : [...prevDays, day]
+                : [...prevDays, day],
         );
     };
 
@@ -140,34 +151,53 @@ const Reminder = () => {
         return `${hours}:${minutes < 10 ? '0' : ''}${minutes} ${amPm}`;
     };
 
-    const renderAlarmItem = useCallback(({ item, index }) => (
-        <View style={[styles.alarmItem, { backgroundColor: colors.nav_background }]}>
-            <Text style={[styles.reminderText, { color: colors.text }]}>
-                {formatTime(new Date(item.date))}
-            </Text>
-            <TouchableOpacity
-                style={styles.inlineDeleteButton}
-                onPress={() => deleteAlarm(index)}
+    const renderAlarmItem = useCallback(
+        ({ item, index }) => (
+            <View
+                style={[
+                    styles.alarmItem,
+                    { backgroundColor: colors.nav_background },
+                ]}
             >
-                <TrashIcon width={25} height={25} fill={colors.text} />
-            </TouchableOpacity>
-        </View>
-    ), [alarms, colors.text]);
+                <Text style={[styles.reminderText, { color: colors.text }]}>
+                    {formatTime(new Date(item.date))}
+                </Text>
+                <TouchableOpacity
+                    style={styles.inlineDeleteButton}
+                    onPress={() => deleteAlarm(index)}
+                >
+                    <TrashIcon width={25} height={25} fill={colors.text} />
+                </TouchableOpacity>
+            </View>
+        ),
+        [alarms, colors.text],
+    );
 
-    const renderReminderItem = useCallback(({ item }) => (
-        <View style={styles.reminderItem}>
-            <Text style={[styles.reminderText, { color: colors.text }]}>
-                {formatTime(new Date(item.date))} on {item.days.join(', ')}
-            </Text>
-        </View>
-    ), [reminders, colors.text]);
+    const renderReminderItem = useCallback(
+        ({ item }) => (
+            <View style={styles.reminderItem}>
+                <Text style={[styles.reminderText, { color: colors.text }]}>
+                    {formatTime(new Date(item.date))} on {item.days.join(', ')}
+                </Text>
+            </View>
+        ),
+        [reminders, colors.text],
+    );
 
     return (
         <>
             <SafeAreaView
-                style={[styles.container, { backgroundColor: colors.background, height: screenHeight - tabBarHeight }]}
+                style={[
+                    styles.container,
+                    {
+                        backgroundColor: colors.background,
+                        height: screenHeight - tabBarHeight,
+                    },
+                ]}
             >
-                <Text style={[styles.header, { color: colors.text }]}>Reminder</Text>
+                <Text style={[styles.header, { color: colors.text }]}>
+                    Reminder
+                </Text>
                 {alarms.length > 0 ? (
                     <FlatList
                         data={alarms}
@@ -179,7 +209,12 @@ const Reminder = () => {
                     />
                 ) : (
                     <View style={styles.noRemindersContainer}>
-                        <Text style={[styles.reminderText, { color: colors.text }]}>
+                        <Text
+                            style={[
+                                styles.reminderText,
+                                { color: colors.text },
+                            ]}
+                        >
                             No reminders set.
                         </Text>
                     </View>
@@ -208,7 +243,7 @@ const Reminder = () => {
             />
         </>
     );
-}
+};
 
 const styles = StyleSheet.create({
     container: {

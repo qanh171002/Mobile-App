@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     Dimensions,
     StyleSheet,
@@ -18,6 +18,7 @@ import Animated, {
     useSharedValue,
     withTiming,
 } from 'react-native-reanimated';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import Arrow from '../../assets/images/arrow';
 import HistorySvg from '../../assets/images/history';
@@ -26,15 +27,51 @@ import WaterAnimation from '../components/WaterAnimation';
 import { useTheme } from '../contexts/ThemeContext';
 import { useWaterTracker } from '../contexts/WaterTrackerContext';
 
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { RootStackParamList } from '../navigation/AppNavigator';
+
 const windowWidth = Dimensions.get('window').width;
 
 const Home = () => {
+    const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
     const { colors } = useTheme(); // Using colors from the theme context
     const { currentLevel, maxLevel } = useWaterTracker();
 
     const [currentDate, setCurrentDate] = useState<Date>(new Date());
     const [showDatePicker, setShowDatePicker] = useState<boolean>(false);
+    const [targetValue, setTargetValue] = useState<string>('0 ml');
+    const [drankValue, setDrankValue] = useState<string>('0');
+    const [drinksCount, setDrinksCount] = useState<number>(0);
     const today = new Date();
+
+    const fetchDailyData = async (date: Date) => {
+        const dateString = date.toISOString().split('T')[0];
+        try {
+            const jsonValue = await AsyncStorage.getItem('@selectedTemplate');
+            if (jsonValue !== null) {
+                const { value, unit } = JSON.parse(jsonValue);
+                const target = unit === 'ml' ? value : (value / 29.5735).toFixed(2);
+                setTargetValue(`${target} ${unit}`);
+            }
+
+            const dailyData = await AsyncStorage.getItem(dateString);
+            if (dailyData !== null) {
+                const { drank, count } = JSON.parse(dailyData);
+                setDrankValue(drank.toString());
+                setDrinksCount(count);
+            } else {
+                setDrankValue('0');
+                setDrinksCount(0);
+            }
+        } catch (e) {
+            console.error('Failed to fetch daily data.', e);
+        }
+    };
+
+    useEffect(() => {
+        fetchDailyData(currentDate);
+    }, [currentDate]);
 
     const translateX = useSharedValue(0);
     const isAnimating = useSharedValue(false);
@@ -124,6 +161,18 @@ const Home = () => {
         }
     };
 
+    const calculateRemaining = () => {
+        const target = parseInt(targetValue.split(' ')[0]);
+        const drank = parseInt(drankValue);
+        return target - drank;
+    };
+
+    const calculatePercentage = () => {
+        const target = parseInt(targetValue.split(' ')[0]);
+        const drank = parseInt(drankValue);
+        return Math.floor((drank / target) * 100);
+    };
+
     const animatedStyle = useAnimatedStyle(() => ({
         transform: [
             {
@@ -174,28 +223,32 @@ const Home = () => {
                             }}
                         />
                     )}
-                    <Animated.View
-                        style={[
-                            styles.mainTableWrapper,
-                            animatedStyle,
-                            {
-                                backgroundColor: colors.sub_background,
-                                borderColor: colors.primary,
-                            },
-                        ]}
+                    <TouchableOpacity
+                        onPress={() => navigation.navigate('SetGoal')}
                     >
-                        <WaterAnimation />
-                        <View style={styles.centerContent}>
-                            <Text
-                                style={[
-                                    styles.percentage,
-                                    { color: colors.primary },
-                                ]}
-                            >
-                                {Math.floor((currentLevel / maxLevel) * 100)}%
-                            </Text>
-                        </View>
-                    </Animated.View>
+                        <Animated.View
+                            style={[
+                                styles.mainTableWrapper,
+                                animatedStyle,
+                                {
+                                    backgroundColor: colors.sub_background,
+                                    borderColor: colors.primary,
+                                },
+                            ]}
+                        >
+                            <WaterAnimation />
+                            <View style={styles.centerContent}>
+                                <Text
+                                    style={[
+                                        styles.percentage,
+                                        { color: colors.primary },
+                                    ]}
+                                >
+                                    {calculatePercentage()}%
+                                </Text>
+                            </View>
+                        </Animated.View>
+                    </TouchableOpacity>
                     <View style={styles.infoContainer}>
                         <View style={styles.column}>
                             <Text
@@ -238,7 +291,7 @@ const Home = () => {
                                     { color: colors.primary },
                                 ]}
                             >
-                                0 ml
+                                {targetValue}
                             </Text>
                             <Text
                                 style={[
@@ -246,7 +299,7 @@ const Home = () => {
                                     { color: colors.primary },
                                 ]}
                             >
-                                0
+                                {drankValue}
                             </Text>
                             <Text
                                 style={[
@@ -254,7 +307,7 @@ const Home = () => {
                                     { color: colors.primary },
                                 ]}
                             >
-                                0
+                                {calculateRemaining()}
                             </Text>
                             <Text
                                 style={[
@@ -262,7 +315,7 @@ const Home = () => {
                                     { color: colors.primary },
                                 ]}
                             >
-                                0
+                                {drinksCount}
                             </Text>
                         </View>
                     </View>
